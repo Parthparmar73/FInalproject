@@ -1,0 +1,220 @@
+<main>
+  <nav class="navbar">
+
+    <!-- LEFT -->
+    <div class="nav-left">
+      <a routerLink="/">
+        <img src="/assets/logo.png" class="logo" />
+      </a>
+    </div>
+
+    <!-- CENTER -->
+    <div class="nav-center">
+      <ul>
+
+        <!-- SERVICES -->
+        <li class="services-wrapper"
+            (mouseenter)="openDropdown('services')"
+            (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Services</a>
+
+          <div class="mega-dropdown"
+               [class.show]="activeDropdown === 'services'">
+
+            <div class="dropdown-grid">
+
+              <div>
+                <h4>Services</h4>
+                <a routerLink="/ecommerce">E-commerce Development</a>
+                <a routerLink="/design-to-html">Design to HTML</a>
+              </div>
+
+              <div>
+                <h4>Business Challenges</h4>
+                <a routerLink="/digitaltransformation">
+                  <div class="icon-box">Digital Transformation</div>
+                </a>
+                <a routerLink="/security">
+                  <div class="icon-box">Security</div>
+                </a>
+                <a routerLink="/performance">
+                  <div class="icon-box">Performance</div>
+                </a>
+              </div>
+
+              <div>
+                <h4>Industry Focus</h4>
+                <a routerLink="/manufacturing">Manufacturing</a>
+                <a routerLink="/automotive">Automotive</a>
+                <a routerLink="/retail-ecommerce">Retail & E-commerce</a>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- COMPANIES -->
+        <li class="services-wrapper"
+            (mouseenter)="openDropdown('companies')"
+            (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Companies</a>
+
+          <div class="mega-dropdown"
+               [class.show]="activeDropdown === 'companies'">
+
+            <div class="dropdown-grid">
+
+              <div>
+                <h2>
+                  We help businesses <br />
+                  simplify next-gen tech
+                </h2>
+              </div>
+
+              <div>
+                <h4>Solutions</h4>
+                <a routerLink="/team">
+                  <div class="icon-box">Team</div>
+                </a>
+                <a routerLink="/careers">
+                  <div class="icon-box">Careers</div>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- PACKAGES -->
+        <li class="services-wrapper"
+            (mouseenter)="openDropdown('packages')"
+            (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Packages</a>
+
+          <div class="mega-dropdown"
+               [class.show]="activeDropdown === 'packages'">
+
+            <div class="dropdown-grid packages-grid">
+
+              <!-- Ecommerce -->
+              <div class="package-card ecommerce">
+                <div class="package-header">
+                  <i class="fas fa-shopping-cart"></i>
+                  <div>
+                    <h4>E-commerce Solution</h4>
+                    <span class="badge orange">BEST SELLER</span>
+                  </div>
+                </div>
+
+                <p>
+                  Full end-to-end platform with payment gateway,
+                  admin panel & mobile-ready UI.
+                </p>
+
+                <div class="package-actions">
+                  <button (click)="selectEcommerce()">Details</button>
+                  <button class="primary"
+                          (click)="getQuote(ecommerceService)">
+                    Get Quote
+                  </button>
+                </div>
+              </div>
+
+              <!-- Design -->
+              <div class="package-card design">
+                <div class="package-header">
+                  <i class="fas fa-file-code"></i>
+                  <div>
+                    <h4>Design to HTML</h4>
+                    <span class="badge green">PIXEL PERFECT</span>
+                  </div>
+                </div>
+
+                <p>
+                  Figma / XD to responsive, semantic &
+                  blazing-fast HTML + Tailwind code.
+                </p>
+
+                <div class="package-actions">
+                  <button (click)="selectDesignToHtml()">Details</button>
+                  <button class="primary"
+                          (click)="getQuote(designToHtmlService)">
+                    Get Quote
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- ABOUT -->
+        <li>
+          <a class="nav-link" routerLink="/aboutus">About Us</a>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="nav-right">
+      <div class="support">
+        <span class="support-text">pixelroot</span><br />
+        <span class="support-phone">+91 8160523813</span>
+      </div>
+
+      <button
+  type="button"
+  class="contact-btn"
+  (click)="openContactPopup()">
+  Contact Us
+</button>
+
+    </div>
+
+  </nav>
+
+  <div class="navbar-divider"></div>
+</main>
+
+<!-- CONTACT POPUP -->
+<div class="overlay" *ngIf="showContactPopup">
+
+  <div class="contact-modal">
+
+    <span class="close"
+          (click)="closeContactPopup()">✕</span>
+
+    <h2>Schedule a Free Consultation</h2>
+
+    <form>
+      <div class="row">
+        <input type="text" placeholder="First name" />
+        <input type="text" placeholder="Last name" />
+      </div>
+
+      <input type="text" placeholder="Company / Organization" />
+      <input type="email" placeholder="Company email" />
+      <input type="tel" placeholder="Phone" />
+
+      <select>
+        <option>Select Option</option>
+        <option>Web Development</option>
+        <option>App Development</option>
+        <option>UI / UX</option>
+      </select>
+
+      <textarea
+        placeholder="To better assist you, please describe how we can help...">
+      </textarea>
+
+      <button type="submit" class="submit-btn">
+        Submit
+      </button>
+    </form>
+
+  </div>
+</div>

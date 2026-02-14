@@ -1,0 +1,341 @@
+/* NAVBAR BASE */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+  background: #fff;
+}
+
+/* LOGO */
+.logo {
+  height: 60px;
+}
+
+/* CENTER MENU */
+.nav-center ul {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-center a {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* SERVICES */
+.services-wrapper {
+  position: relative;
+}
+
+/* DROPDOWN */
+.mega-dropdown {
+  position: fixed;
+  inset: 70px 0 auto 0; /* top | right | bottom | left */
+  background: #fff;
+
+  /* Equal spacing on both sides */
+  padding: 30px clamp(40px, 6vw, 80px);
+
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.mega-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* GRID */
+.dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 50px;
+}
+
+/* HEADINGS */
+.dropdown-grid h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* LINKS */
+.dropdown-grid a,
+.icon-box {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.dropdown-grid a:hover,
+.icon-box:hover {
+  color: #0a7cff;
+}
+
+/* ICON BOX */
+.icon-box {
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+/* VIEW ALL */
+.view-all {
+  color: #0a7cff;
+  font-weight: 500;
+}
+
+/* RIGHT */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.contact-btn {
+  padding: 8px 16px;
+  border: none;
+  background: #0b5d5f;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.navbar-divider {
+  height: 1px;
+  background: #eee;
+}
+
+/* =========================
+   PACKAGES GRID (FIXED)
+========================= */
+
+.packages-grid {
+  display: grid;                 /* ❗ REQUIRED */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 20px;
+}
+
+/* =========================
+   PACKAGE CARD
+========================= */
+
+.package-card {
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 28px;
+  transition: all 0.3s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.package-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.package-header i {
+  font-size: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* ICON COLORS */
+.package-card.ecommerce i {
+  background: linear-gradient(135deg, #ff7a18, #ff3d00);
+}
+
+.package-card.design i {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* =========================
+   TITLES & BADGES
+========================= */
+
+.package-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge.orange {
+  background: rgba(255, 122, 24, 0.15);
+  color: #ff7a18;
+}
+
+.badge.green {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.package-card p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 14px 0 22px;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.package-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.package-actions button {
+  flex: 1;
+  padding: 11px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.package-actions button:hover {
+  background: #f6f6f6;
+}
+
+.package-actions button.primary {
+  background: #0b5d5f;
+  border-color: #0b5d5f;
+  color: #fff;
+}
+
+.package-actions button.primary:hover {
+  background: #09494a;
+}
+
+/* =========================
+   VIEW ALL
+========================= */
+
+.view-all-wrapper {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.view-all-wrapper .view-all {
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .packages-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+/* overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+/* modal */
+.contact-modal{
+  background:#fff;
+  width:620px;
+  padding:40px;
+  border-radius:20px;
+  position:relative;
+}
+
+/* close */
+.close{
+  position:absolute;
+  top:15px;
+  right:20px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* form */
+.contact-modal h2{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.row{
+  display:flex;
+  gap:15px;
+}
+
+input, select, textarea{
+  width:100%;
+  padding:14px;
+  margin-bottom:15px;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+textarea{
+  height:120px;
+}
+
+.submit-btn{
+  width:100%;
+  padding:14px;
+  background:#0f766e;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+}

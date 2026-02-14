@@ -1,0 +1,173 @@
+.architects {
+  background: #0b5d5f;
+  padding: 140px 0;
+  font-family: 'Inter', sans-serif;
+  color: #e5e7eb;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+/* HEADER */
+.section-head {
+  text-align: center;
+  margin-bottom: 90px;
+}
+
+.section-head h2 {
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.section-head h2 span {
+  color: #6de0e2;
+  text-shadow: 0 0 28px rgba(168, 85, 247, 0.45);
+}
+
+.section-head p {
+  color: #9ca3af;
+  font-size: 17px;
+  max-width: 620px;
+  margin: auto;
+  line-height: 1.7;
+}
+
+/* TEAM GRID */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  margin-bottom: 120px;
+}
+
+/* CARD */
+.team-card {
+  background: linear-gradient(
+  180deg,
+  rgba(18, 110, 112, 0.88),   /* soft teal highlight */
+  rgba(6, 44, 48, 0.96)      /* deep teal base */
+);
+  border-radius: 28px;
+  padding: 48px 36px;
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 30px 80px rgba(0, 0, 0, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 85, 247, 0.35),
+    0 40px 120px rgba(168, 85, 247, 0.25);
+}
+
+.team-card img {
+  width: 110px;
+  height: 110px;
+  border-radius: 20%;
+  object-fit: cover;
+  margin-bottom: 22px;
+  filter: grayscale(100%);
+
+  transition: filter 0.3s ease; /* 👈 sirf ye line add */
+}
+
+.team-card img:hover {
+  filter: grayscale(0);
+}
+
+
+.team-card h4 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.team-card span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #6de0e2;
+  margin-bottom: 18px;
+}
+
+.team-card p {
+  font-size: 14.5px;
+  color: #9ca3af;
+  line-height: 1.7;
+}
+
+/* SOCIAL */
+.social {
+  margin-top: 26px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.icon:hover {
+  opacity: 1;
+}
+
+/* CTA */
+.cta {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 36px 44px;   /* 👈 charo taraf kam */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.cta h3 {
+  color: #020617;
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.cta p {
+  color: #475569;
+  font-size: 15px;
+}
+
+.cta button {
+  background: #020617;
+  color: #ffffff;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.cta button:hover {
+  background: #0f172a;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta {
+    flex-direction: column;
+    text-align: center;
+  }
+}
