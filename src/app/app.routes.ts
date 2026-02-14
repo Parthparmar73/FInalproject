@@ -1,3 +1,5 @@
+import { LoginComponent } from './pages/login/login';
+import { DashboardComponent } from './pages/dashboard/dashboard';
 import { Routes } from '@angular/router';
 import { Home } from './home/home'; // agar home component hai
 import { Ecommerce } from './ecommerce/ecommerce';
@@ -14,6 +16,8 @@ import { Aboutus } from './aboutus/aboutus';
 import { Form } from './form/form'; // agar form component hai
 
 export const routes: Routes = [
+  {path:'login', component:LoginComponent},
+  {path:'dashboard', component:DashboardComponent},
   { path: '', component: Home },        // 👈 ROOT FIX
    { path: 'ecommerce', component: Ecommerce },
    {path:'design-to-html', component: DesignToHtml},
@@ -27,4 +31,5 @@ export const routes: Routes = [
    {path:'careers',component:Careers},
   { path: 'aboutus', component: Aboutus },
   { path: 'form', component: Form },
+  {path:'**', redirectTo: 'login', pathMatch: 'full'} // catch-all route
 ];

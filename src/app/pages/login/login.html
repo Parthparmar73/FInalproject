@@ -1,0 +1,32 @@
+<div class="login-container">
+    <div class="login-box">
+  
+      <h2>Welcome Back 👋</h2>
+      <p>Login to continue to Pixelroot</p>
+  
+      <form (ngSubmit)="login()">
+  
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" required/>
+        </div>
+  
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="password" name="password" required placeholder="Enter your password" />
+        </div>
+  
+        <button type="button" (click)="login()" class="login-btn">
+          Login
+        </button>
+  
+        <div class="extra-links">
+          <a href="#">Forgot Password?</a>
+          <a routerLink="/register">Create Account</a>
+        </div>
+  
+      </form>
+  
+    </div>
+  </div>
+  

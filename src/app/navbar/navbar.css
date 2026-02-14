@@ -339,3 +339,32 @@ textarea{
   font-size:16px;
   cursor:pointer;
 }
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  color: #0f766e;
+  font-size: 14px;
+}
+
+.logout-btn {
+  background: #0f766e;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.logout-btn:hover {
+  background: darkred;
+}
+
+.login-btn {
+  color: #0f766e;
+  text-decoration: none;
+  font-weight: bold;
+}
