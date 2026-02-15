@@ -17,21 +17,25 @@ import { Form } from './form/form'; // agar form component hai
 import { Register } from './pages/register/register'; // agar register component hai  
 
 export const routes: Routes = [
-  {path:'login', component:LoginComponent},
-  {path:'dashboard', component:DashboardComponent},
-  { path: '', component: Home },        // 👈 ROOT FIX
-   { path: 'ecommerce', component: Ecommerce },
-   {path:'design-to-html', component: DesignToHtml},
-   {path:'digitaltransformation', component: Digitaltransformation},
-   {path:'security', component: Security},
-   {path:'performance', component: Performance},
-   {path:'manufacturing', component: Manufacturing},
-   {path:'automotive', component: Automotive},
-   {path:'retail-ecommerce', component: RetailEcom},
-   {path:'team',component:Team},
-   {path:'careers',component:Careers},
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: Register },   // 👈 yaha shift karo
+  { path: 'dashboard', component: DashboardComponent },
+
+  { path: '', component: Home },
+
+  { path: 'ecommerce', component: Ecommerce },
+  { path: 'design-to-html', component: DesignToHtml },
+  { path: 'digitaltransformation', component: Digitaltransformation },
+  { path: 'security', component: Security },
+  { path: 'performance', component: Performance },
+  { path: 'manufacturing', component: Manufacturing },
+  { path: 'automotive', component: Automotive },
+  { path: 'retail-ecommerce', component: RetailEcom },
+  { path: 'team', component: Team },
+  { path: 'careers', component: Careers },
   { path: 'aboutus', component: Aboutus },
   { path: 'form', component: Form },
-  {path:'**', redirectTo: 'login', pathMatch: 'full'}, // catch-all route
-  {path:'register', component: Register}
+
+  { path: '**', redirectTo: 'login' }  // 👈 ALWAYS LAST
 ];
+
