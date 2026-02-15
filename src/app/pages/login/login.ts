@@ -34,8 +34,8 @@ export class LoginComponent {
       .then(() => {
         this.router.navigate(['/']);
       })
-      .catch(err => {
-        alert(err.message);
+      .catch((err: any) => {
+        alert(err?.message ?? err);
       });
   
   }

@@ -14,6 +14,7 @@ import { Team } from './team/team';
 import { Careers } from './careers/careers';
 import { Aboutus } from './aboutus/aboutus';
 import { Form } from './form/form'; // agar form component hai
+import { Register } from './pages/register/register'; // agar register component hai  
 
 export const routes: Routes = [
   {path:'login', component:LoginComponent},
@@ -31,5 +32,6 @@ export const routes: Routes = [
    {path:'careers',component:Careers},
   { path: 'aboutus', component: Aboutus },
   { path: 'form', component: Form },
-  {path:'**', redirectTo: 'login', pathMatch: 'full'} // catch-all route
+  {path:'**', redirectTo: 'login', pathMatch: 'full'}, // catch-all route
+  {path:'register', component: Register}
 ];
