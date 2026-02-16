@@ -199,39 +199,115 @@
 </main>
 
 <!-- CONTACT POPUP -->
-<div class="overlay" *ngIf="showContactPopup">
+<div class="overlay"
+     *ngIf="showContactPopup"
+     (click)="closeContactPopup()">
 
-  <div class="contact-modal">
+  <div class="contact-modal"
+       (click)="$event.stopPropagation()">
 
-    <span class="close"
-          (click)="closeContactPopup()">✕</span>
+    <span class="close" (click)="closeContactPopup()">✕</span>
 
     <h2>Schedule a Free Consultation</h2>
 
-    <form>
+    <form [formGroup]="contactForm"
+          (ngSubmit)="submitContactForm()">
+
       <div class="row">
-        <input type="text" placeholder="First name" />
-        <input type="text" placeholder="Last name" />
+        <div>
+          <input type="text"
+                 placeholder="First name"
+                 formControlName="firstName"
+                 [class.invalid]="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.invalid"/>
+
+          <small *ngIf="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.errors?.['required']">
+            First name is required
+          </small>
+
+          <small *ngIf="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.errors?.['minlength']">
+            Minimum 2 characters required
+          </small>
+        </div>
+
+        <div>
+          <input type="text"
+                 placeholder="Last name"
+                 formControlName="lastName"
+                 [class.invalid]="contactForm.get('lastName')?.touched && contactForm.get('lastName')?.invalid"/>
+
+          <small *ngIf="contactForm.get('lastName')?.touched && contactForm.get('lastName')?.invalid">
+            Last name is required
+          </small>
+        </div>
       </div>
 
-      <input type="text" placeholder="Company / Organization" />
-      <input type="email" placeholder="Company email" />
-      <input type="tel" placeholder="Phone" />
+      <input type="text"
+             placeholder="Company / Organization"
+             formControlName="company"
+             [class.invalid]="contactForm.get('company')?.touched && contactForm.get('company')?.invalid"/>
 
-      <select>
-        <option>Select Option</option>
+      <small *ngIf="contactForm.get('company')?.touched && contactForm.get('company')?.invalid">
+        Company is required
+      </small>
+
+      <input type="email"
+             placeholder="Company email"
+             formControlName="email"
+             [class.invalid]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid"/>
+
+      <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['required']">
+        Email is required
+      </small>
+
+      <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['email']">
+        Enter valid email address
+      </small>
+
+      <input type="tel"
+             placeholder="Phone"
+             formControlName="phone"
+             [class.invalid]="contactForm.get('phone')?.touched && contactForm.get('phone')?.invalid"/>
+
+      <small *ngIf="contactForm.get('phone')?.touched && contactForm.get('phone')?.errors?.['required']">
+        Phone number is required
+      </small>
+
+      <small *ngIf="contactForm.get('phone')?.touched && contactForm.get('phone')?.errors?.['pattern']">
+        Enter valid 10 digit phone number
+      </small>
+
+      <select formControlName="service"
+              [class.invalid]="contactForm.get('service')?.touched && contactForm.get('service')?.invalid">
+        <option value="">Select Option</option>
         <option>Web Development</option>
         <option>App Development</option>
         <option>UI / UX</option>
       </select>
 
+      <small *ngIf="contactForm.get('service')?.touched && contactForm.get('service')?.invalid">
+        Please select a service
+      </small>
+
       <textarea
-        placeholder="To better assist you, please describe how we can help...">
+        placeholder="To better assist you, please describe how we can help..."
+        formControlName="message"
+        [class.invalid]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid">
       </textarea>
 
-      <button type="submit" class="submit-btn">
+      <small *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
+        Message is required
+      </small>
+
+      <small *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
+        Message must be at least 10 characters
+      </small>
+
+      <button type="submit"
+              class="submit-btn"
+              [disabled]="contactForm.invalid">
         Submit
       </button>
+
     </form>
 
   </div>

@@ -3,22 +3,31 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth';
 
+// 🔥 ADD THESE
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [
+    RouterModule,
+    CommonModule,
+    ReactiveFormsModule   // 🔥 ADD THIS
+  ],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
 export class NavbarComponent implements OnInit {
 
   activeDropdown: string | null = null;
-
   showContactPopup = false;
 
   // 🔥 LOGIN STATE
   userEmail: string | null = null;
   isLoggedIn = false;
+
+  // 🔥 CONTACT FORM
+  contactForm!: FormGroup;
 
   ecommerceService = {
     name: 'E-commerce Solution'
@@ -30,7 +39,8 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private fb: FormBuilder   // 🔥 ADD THIS
   ) {}
 
   // 🔥 SESSION CHECK
@@ -47,9 +57,19 @@ export class NavbarComponent implements OnInit {
       }
   
     });
-  
+
+    // 🔥 INIT CONTACT FORM
+    this.contactForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', Validators.required],
+      company: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+      service: ['', Validators.required],
+      message: ['', [Validators.required, Validators.minLength(10)]]
+    });
+
   }
-  
 
   // 🔥 LOGOUT
   logout() {
@@ -98,5 +118,21 @@ export class NavbarComponent implements OnInit {
 
   closeContactPopup() {
     this.showContactPopup = false;
+  }
+
+  // 🔥 FORM SUBMIT
+  submitContactForm() {
+
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+
+    console.log(this.contactForm.value);
+
+    alert('Form Submitted Successfully ✅');
+
+    this.contactForm.reset();
+    this.closeContactPopup();
   }
 }

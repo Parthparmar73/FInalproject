@@ -2,9 +2,20 @@
   background: #050505;
   color: #ffffff;
   padding-top: 90px;
+  font-family: 'Segoe UI', sans-serif;
+}
+/* Make all footer links show pointer cursor */
+.footer a {
+  cursor: pointer;
 }
 
-/* TOP */
+/* Button ke liye bhi ensure kar lo */
+.cta-btn {
+  cursor: pointer;
+}
+
+/* ================= TOP ================= */
+
 .footer-top {
   max-width: 1300px;
   margin: auto;
@@ -13,7 +24,6 @@
   padding: 0 6% 70px;
 }
 
-/* LINKS */
 .footer-links {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -25,6 +35,7 @@
   margin-bottom: 18px;
   font-size: 16px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .link-group a {
@@ -32,7 +43,8 @@
   color: #c7c7c7;
   margin-bottom: 12px;
   font-size: 14px;
-  transition: color 0.3s ease, transform 0.3s ease;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .link-group a:hover {
@@ -40,25 +52,26 @@
   transform: translateX(4px);
 }
 
-/* CENTER CTA */
+/* ================= CENTER CTA ================= */
+
 .footer-center {
   flex: 1;
   text-align: center;
-  position: relative;
 }
 
 .footer-center h2 {
   font-size: 30px;
   font-weight: 700;
-  line-height: 1.3;
   margin: 28px 0;
+  letter-spacing: 1px;
 }
 
-.footer-center button {
+/* CTA Button */
+.cta-btn {
   background: linear-gradient(135deg, #0b5d5f, #0e7c7f);
   color: #ffffff;
   border: none;
-  padding: 15px 30px;
+  padding: 15px 32px;
   border-radius: 30px;
   font-size: 14px;
   font-weight: 600;
@@ -66,12 +79,13 @@
   transition: all 0.3s ease;
 }
 
-.footer-center button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(11,93,95,0.4);
+.cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(11, 93, 95, 0.4);
 }
 
-/* DOT PATTERN */
+/* ================= DOT PATTERN ================= */
+
 .dots {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -97,11 +111,12 @@
   50% { opacity: 1; }
 }
 
-/* BOTTOM */
+/* ================= BOTTOM ================= */
+
 .footer-bottom {
   background: #ffffff;
   color: #111111;
-  padding: 35px 6%;
+  padding: 40px 6%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -109,58 +124,103 @@
   gap: 25px;
 }
 
-.review,
-.address,
+.review a {
+  text-decoration: none;
+  color: #111;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.review a:hover {
+  color: #0b5d5f;
+}
+
+.address {
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
 .contact {
   font-size: 14px;
-  opacity: 0.9;
+}
+
+.contact a {
+  text-decoration: none;
+  color: #111;
+  transition: color 0.3s ease;
+}
+
+.contact a:hover {
+  color: #0b5d5f;
 }
 
 /* SOCIAL */
 .social a {
-  margin-right: 16px;
+  margin-right: 18px;
   font-weight: 600;
   font-size: 14px;
+  text-decoration: none;
   color: #111;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .social a:hover {
   color: #0b5d5f;
 }
 
-/* COPYRIGHT */
+/* ================= COPYRIGHT ================= */
+
 .copyright {
   background: #ffffff;
   text-align: center;
-  padding-bottom: 22px;
+  padding: 20px 6%;
   font-size: 13px;
-  color: #444;
+  color: #555;
+  border-top: 1px solid #eee;
 }
 
-/* RESPONSIVE */
+.copyright a {
+  text-decoration: none;
+  color: #111;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.copyright a:hover {
+  color: #0b5d5f;
+}
+
+/* ================= RESPONSIVE ================= */
+
 @media (max-width: 992px) {
+
   .footer-top {
     flex-direction: column;
-    gap: 55px;
     text-align: center;
+    gap: 55px;
   }
 
   .footer-links {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .link-group a:hover {
-    transform: none;
-  }
-
   .footer-bottom {
     flex-direction: column;
     text-align: center;
   }
+
+  .social {
+    margin-top: 10px;
+  }
+
+  .link-group a:hover {
+    transform: none;
+  }
 }
 
 @media (max-width: 576px) {
+
   .footer-links {
     grid-template-columns: 1fr;
   }

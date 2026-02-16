@@ -274,82 +274,6 @@
   }
 }
 
-
-
-
-/* overlay */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.75);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-/* modal */
-.contact-modal{
-  background:#fff;
-  width:620px;
-  padding:40px;
-  border-radius:20px;
-  position:relative;
-}
-
-/* close */
-.close{
-  position:absolute;
-  top:15px;
-  right:20px;
-  font-size:22px;
-  cursor:pointer;
-}
-
-/* form */
-.contact-modal h2{
-  text-align:center;
-  margin-bottom:30px;
-}
-
-.row{
-  display:flex;
-  gap:15px;
-}
-
-input, select, textarea{
-  width:100%;
-  padding:14px;
-  margin-bottom:15px;
-  border:1px solid #ddd;
-  border-radius:8px;
-}
-
-textarea{
-  height:120px;
-}
-
-.submit-btn{
-  width:100%;
-  padding:14px;
-  background:#0f766e;
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  cursor:pointer;
-}
-.user-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-name {
-  color: #0f766e;
-  font-size: 14px;
-}
-
 .logout-btn {
   background: #0f766e;
   border: none;
@@ -364,7 +288,223 @@ textarea{
 }
 
 .login-btn {
-  color: #0f766e;
+  display: inline-block;
+  background-color: #0f766e;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 6px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.login-btn:hover {
+  background-color: #115e59;
+  transform: translateY(-2px);
+}
+
+/* Active click effect */
+.login-btn:active {
+  transform: translateY(0);
+}
+
+
+
+/* ==============================
+   OVERLAY (Blur + Smooth Fade)
+============================== */
+
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+
+/* ==============================
+   MODAL CARD
+============================== */
+
+.contact-modal{
+  background: #ffffff;
+  width: 640px;
+  max-width: 95%;
+  padding: 50px;
+  border-radius: 24px;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.18);
+  animation: slideUp 0.35s ease;
+}
+
+@keyframes slideUp{
+  from{
+    transform: translateY(40px);
+    opacity:0;
+  }
+  to{
+    transform: translateY(0);
+    opacity:1;
+  }
+}
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.close{
+  position:absolute;
+  top:18px;
+  right:22px;
+  font-size:18px;
+  cursor:pointer;
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.close:hover{
+  background:#0f766e;
+  color:#fff;
+}
+
+/* ==============================
+   TITLE
+============================== */
+
+.contact-modal h2{
+  text-align:center;
+  margin-bottom:40px;
+  font-size:26px;
+  font-weight:600;
+  color:#111827;
+  letter-spacing:0.3px;
+}
+
+/* ==============================
+   FORM LAYOUT
+============================== */
+
+.row{
+  display:flex;
+  gap: 50px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:15px 16px;
+  margin-bottom:18px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  font-size:14px;
+  background:#f9fafb;
+  transition: all 0.25s ease;
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:#9ca3af;
+}
+
+/* Focus Effect */
+
+input:focus,
+select:focus,
+textarea:focus{
+  outline:none;
+  border-color:#0f766e;
+  background:#ffffff;
+  box-shadow: 0 0 0 4px rgba(15,118,110,0.12);
+}
+
+/* Textarea */
+
+textarea{
+  height:130px;
+  resize:none;
+}
+
+/* ==============================
+   SUBMIT BUTTON
+============================== */
+
+.submit-btn{
+  width:100%;
+  padding:16px;
+  background: linear-gradient(135deg,#0f766e,#115e59);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-size:15px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(15,118,110,0.35);
+}
+
+.submit-btn:active{
+  transform: translateY(0);
+}
+
+.submit-btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+/* ==============================
+   VALIDATION STYLE
+============================== */
+
+.invalid{
+  border:1px solid #dc2626 !important;
+  background:#fef2f2;
+}
+
+small{
+  color:#dc2626;
+  font-size:12px;
+  margin-top:-12px;
+  margin-bottom:14px;
+  display:block;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width:600px){
+
+  .contact-modal{
+    padding:30px 22px;
+  }
+
+  .row{
+    flex-direction:column;
+  }
+
 }
