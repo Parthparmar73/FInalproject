@@ -1,52 +1,65 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { OnInit } from '@angular/core';
+import { User } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 
-// 🔥 ADD THESE
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
+
   imports: [
-    RouterModule,
     CommonModule,
-    ReactiveFormsModule   // 🔥 ADD THIS
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
+
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
 export class NavbarComponent implements OnInit {
 
+  // Services info (for Get Quote buttons)
+ecommerceService = {
+  name: 'E-Commerce Website'
+};
+
+designToHtmlService = {
+  name: 'Design to HTML'
+};
+
+// Auth status
+isLoggedIn = false;
+userEmail: string | null = null;
+
+  // Auth
+  user: any = null;
+
+  // Dropdown
   activeDropdown: string | null = null;
+
+  // Contact popup
   showContactPopup = false;
 
-  // 🔥 LOGIN STATE
-  userEmail: string | null = null;
-  isLoggedIn = false;
-
-  // 🔥 CONTACT FORM
+  // Form
   contactForm!: FormGroup;
 
-  ecommerceService = {
-    name: 'E-commerce Solution'
-  };
-
-  designToHtmlService = {
-    name: 'Design to HTML'
-  };
-
   constructor(
+    private auth: Auth,
+    private authService: AuthService,
     private router: Router,
-    private auth: AuthService,
-    private fb: FormBuilder   // 🔥 ADD THIS
+    private fb: FormBuilder
   ) {}
 
-  // 🔥 SESSION CHECK
   ngOnInit() {
+    this.authService.getUser().subscribe((user: User | null) => {
 
-    this.auth.getUser().subscribe(user => {
   
       if (user) {
         this.isLoggedIn = true;
@@ -57,28 +70,10 @@ export class NavbarComponent implements OnInit {
       }
   
     });
-
-    // 🔥 INIT CONTACT FORM
-    this.contactForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', Validators.required],
-      company: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      service: ['', Validators.required],
-      message: ['', [Validators.required, Validators.minLength(10)]]
-    });
-
   }
+  
 
-  // 🔥 LOGOUT
-  logout() {
-    this.auth.logout().then(() => {
-      this.router.navigate(['/login']);
-    });
-  }
-
-  /* ---------------- DROPDOWNS ---------------- */
+  // ================= DROPDOWN =================
 
   openDropdown(menu: string) {
     this.activeDropdown = menu;
@@ -88,7 +83,7 @@ export class NavbarComponent implements OnInit {
     this.activeDropdown = null;
   }
 
-  /* ---------------- NAVIGATION ---------------- */
+  // ================= NAV =================
 
   selectEcommerce() {
     this.router.navigate(['/ecommerce']);
@@ -101,7 +96,7 @@ export class NavbarComponent implements OnInit {
   }
 
   getQuote(service: any) {
-    console.log('Get quote for:', service.name);
+    console.log('Get quote for:', service);
     this.closeDropdown();
   }
 
@@ -110,7 +105,7 @@ export class NavbarComponent implements OnInit {
     this.closeDropdown();
   }
 
-  /* ---------------- CONTACT POPUP ---------------- */
+  // ================= CONTACT =================
 
   openContactPopup() {
     this.showContactPopup = true;
@@ -120,7 +115,6 @@ export class NavbarComponent implements OnInit {
     this.showContactPopup = false;
   }
 
-  // 🔥 FORM SUBMIT
   submitContactForm() {
 
     if (this.contactForm.invalid) {
@@ -130,9 +124,21 @@ export class NavbarComponent implements OnInit {
 
     console.log(this.contactForm.value);
 
-    alert('Form Submitted Successfully ✅');
+    alert('Message sent successfully!');
 
     this.contactForm.reset();
+
     this.closeContactPopup();
   }
+
+  // ================= LOGOUT =================
+
+  logout() {
+
+    this.authService.logout().then(() => {
+      this.router.navigate(['/login']);
+    });
+
+  }
+
 }

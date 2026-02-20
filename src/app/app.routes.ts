@@ -1,3 +1,4 @@
+import { AuthGuard } from './guards/auth.guards'; // 👈 import AuthGuard
 import { LoginComponent } from './pages/login/login';
 import { DashboardComponent } from './pages/dashboard/dashboard';
 import { Routes } from '@angular/router';
@@ -19,7 +20,7 @@ import { Register } from './pages/register/register'; // agar register component
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },   // 👈 yaha shift karo
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent,canActivate:[AuthGuard] },
 
   { path: '', component: Home },
 

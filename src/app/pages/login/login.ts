@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -26,20 +26,10 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  login() {
-
-    if (!this.email || !this.password) {
-      alert('Please fill all fields');
-      return;
-    }
-
-    this.auth.login(this.email, this.password)
-      .then(() => {
-        // login success
-        this.router.navigate(['/dashboard']);  // 👈 better than '/'
-      })
-      .catch((err: any) => {
-        alert(err?.message ?? err);
-      });
+  login(){
+    this.auth.login(this.email,this.password)
+    .then(()=> this.router.navigate(['/dashboard']))  // 🔥 login ke baad dashboard pe le jao
+    .catch(err=> alert(err.message));
   }
+  
 }
