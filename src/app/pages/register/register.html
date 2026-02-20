@@ -32,6 +32,7 @@
   #emailRef="ngModel"
   required
   email
+  placeholder="Enter your email"
 >
 
 
@@ -54,6 +55,7 @@
   #passwordRef="ngModel"
   required
   minlength="6"
+  placeholder="Enter your password"
 >
 <small *ngIf="passwordRef.errors?.['required'] && passwordRef.touched" style="color:red;">
   Password is required
@@ -74,6 +76,7 @@
   [(ngModel)]="confirmPassword"
   #confirmPasswordRef="ngModel"
   required
+  placeholder="Confirm your password"
 >
 <small
   *ngIf="confirmPassword !== password && confirmPasswordRef.touched"

@@ -90,32 +90,57 @@
   box-shadow: 0 8px 18px rgba(15, 118, 110, 0.25);
 }
 
+/* ===== Register Button ===== */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.3);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
 /* ===== Bottom Links ===== */
 .bottom-links {
   display: flex;
   justify-content: center;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 .bottom-links a {
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
   color: #64748b;
-  cursor: pointer;
+  font-weight: 500;
   position: relative;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
+  padding-bottom: 3px;
 }
 
-/* Animated Underline */
+/* Left to Right Underline */
 .bottom-links a::after {
   content: "";
   position: absolute;
   width: 0%;
   height: 2px;
-  left: 0;
-  bottom: -2px;
-  background: #0f766e;
-  transition: 0.3s ease;
+  left: 0;            /* Start from left */
+  bottom: -3px;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  transition: width 0.3s ease;
 }
 
 .bottom-links a:hover {
@@ -123,5 +148,5 @@
 }
 
 .bottom-links a:hover::after {
-  width: 100%;
+  width: 100%;        /* Expand fully to right */
 }
