@@ -31,6 +31,13 @@
   flex: 2;
 }
 
+.footer-logo img {
+  max-width: 200px;   /* size control */
+  height: auto;
+  display: block;
+  margin: 15px auto;
+}
+
 .link-group h3 {
   margin-bottom: 18px;
   font-size: 16px;
@@ -42,7 +49,7 @@
   display: block;
   color: #c7c7c7;
   margin-bottom: 12px;
-  font-size: 14px;
+  font-size: 16px;
   text-decoration: none;
   transition: all 0.3s ease;
 }
@@ -52,37 +59,6 @@
   transform: translateX(4px);
 }
 
-/* ================= CENTER CTA ================= */
-
-.footer-center {
-  flex: 1;
-  text-align: center;
-}
-
-.footer-center h2 {
-  font-size: 30px;
-  font-weight: 700;
-  margin: 28px 0;
-  letter-spacing: 1px;
-}
-
-/* CTA Button */
-.cta-btn {
-  background: linear-gradient(135deg, #0b5d5f, #0e7c7f);
-  color: #ffffff;
-  border: none;
-  padding: 15px 32px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cta-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(11, 93, 95, 0.4);
-}
 
 /* ================= DOT PATTERN ================= */
 
@@ -123,6 +99,7 @@
   flex-wrap: wrap;
   gap: 25px;
 }
+
 
 .review a {
   text-decoration: none;
