@@ -1,0 +1,78 @@
+<section class="contact-section">
+  <div class="contact-container">
+
+    <!-- LEFT CONTENT -->
+    <div class="contact-left">
+      <span class="badge">CONTACT US</span>
+
+      <h1>
+        Let's bring your project to<br>
+        Digital life
+      </h1>
+
+      <p class="description">
+        Convert your website visitors into leads with our bespoke
+        web development solutions. We're happy to answer any
+        questions you may have.
+      </p>
+
+      <p class="phone">
+        Call us at: <strong>91-8160523813</strong>
+      </p>
+
+      <h3>Your benefits:</h3>
+      <ul class="benefits">
+        <li>✔ Client-oriented</li>
+        <li>✔ Results-driven</li>
+        <li>✔ Independent</li>
+        <li>✔ Problem-solving</li>
+        <li>✔ Competent</li>
+        <li>✔ Transparent</li>
+      </ul>
+
+      <h3>What happens next?</h3>
+      <div class="steps">
+        <div class="step">
+          <span>1</span>
+          <p>We schedule a call at your convenience</p>
+        </div>
+        <div class="step">
+          <span>2</span>
+          <p>We do a discovery and consulting meeting</p>
+        </div>
+        <div class="step">
+          <span>3</span>
+          <p>We prepare a proposal</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="contact-form">
+      <h2>Schedule a Free Consultation</h2>
+
+      <form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)">
+        <div class="row">
+          <input type="text" name="fname" ngModel placeholder="First name" required>
+          <input type="text" name="lname" ngModel placeholder="Last name" required>
+        </div>
+
+        <input type="text" name="cname" ngModel placeholder="Company / Organization" required>
+        <input type="email" name="email" ngModel placeholder="Company email" required>
+        <input type="tel" name="number" ngModel placeholder="Phone" required>
+
+        <select name="service" ngModel required>
+          <option selected>Select Option</option>
+          <option value="Web Development">Web Development</option>
+          <option value="App Development">App Development</option>
+          <option value="Digital Marketing">Digital Marketing</option>
+        </select>
+
+        <textarea name="message" ngModel required placeholder="To better assist you, please describe how we can help..."></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+  </div>
+</section>

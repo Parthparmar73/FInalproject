@@ -1,0 +1,160 @@
+.careers {
+  background:
+    #0b5d5f;
+  padding: 120px 0;
+  font-family: 'Inter', sans-serif;
+  color: #e5e7eb;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+/* HERO */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 80px;
+  align-items: center;
+  margin-bottom: 90px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.hero-left h1 {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.05;
+  margin: 18px 0 24px;
+}
+
+.hero-left h1 span {
+  color: #10b981;
+}
+
+.hero-left p {
+  font-size: 17px;
+  color: #9ca3af;
+  max-width: 460px;
+  line-height: 1.7;
+}
+
+.hero-right img {
+  width: 600px;
+  border-radius: 28px;
+  filter: grayscale(100%);
+  transition: filter 0.8s ease;
+}
+.hero-right img:hover {
+  filter: grayscale(0);
+}
+
+
+/* OPEN HEADER */
+.open-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.open-header h3 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(148,163,184,0.15);
+  color: #cbd5f5;
+}
+
+/* JOB CARDS */
+.jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.job-card {
+  background:#fff;
+  border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 18px;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16,185,129,0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.job-info h4 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #0b5d5f;
+}
+
+.job-info p {
+  font-size: 13px;
+  color: #0b5d5f;
+}
+
+/* CTA */
+.job-cta {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.job-cta button {
+  background: #0b5d5f;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.job-cta button:hover {
+  background: #094a4b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .hero-left h1 {
+    font-size: 46px;
+  }
+
+  .job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .job-cta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

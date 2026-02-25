@@ -1,0 +1,304 @@
+<main>
+  <nav class="navbar">
+
+    <!-- LEFT -->
+    <div class="nav-left">
+      <a routerLink="/">
+        <img src="/assets/logo.png" class="logo" />
+      </a>
+    </div>
+
+    <!-- CENTER -->
+    <div class="nav-center">
+      <ul>
+
+        <!-- SERVICES -->
+        <li class="services-wrapper" (mouseenter)="openDropdown('services')" (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Services</a>
+
+          <div class="mega-dropdown" [class.show]="activeDropdown === 'services'">
+
+            <div class="dropdown-grid">
+
+              <div>
+                <h4>Services</h4>
+                <a routerLink="/ecommerce" (click)="closeDropdown()">E-commerce Development</a>
+                <a routerLink="/design-to-html" (click)="closeDropdown()">Design to HTML</a>
+              </div>
+
+              <div>
+                <h4>Business Challenges</h4>
+                <a routerLink="/digitaltransformation" (click)="closeDropdown()">
+                  <div class="icon-box">Digital Transformation</div>
+                </a>
+                <a routerLink="/security" (click)="closeDropdown()">
+                  <div class="icon-box">Security</div>
+                </a>
+                <a routerLink="/performance" (click)="closeDropdown()">
+                  <div class="icon-box">Performance</div>
+                </a>
+              </div>
+
+              <div>
+                <h4>Industry Focus</h4>
+                <a routerLink="/manufacturing" (click)="closeDropdown()">Manufacturing</a>
+                <a routerLink="/automotive" (click)="closeDropdown()">Automotive</a>
+                <a routerLink="/retail-ecommerce" (click)="closeDropdown()">Retail & E-commerce</a>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- COMPANIES -->
+        <li class="services-wrapper" (mouseenter)="openDropdown('companies')" (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Companies</a>
+
+          <div class="mega-dropdown" [class.show]="activeDropdown === 'companies'">
+
+            <div class="dropdown-grid">
+
+              <div>
+                <h2>
+                  We help businesses <br />
+                  simplify next-gen tech
+                </h2>
+              </div>
+
+              <div>
+                <h4>Solutions</h4>
+                <a routerLink="/team" (click)="closeDropdown()">
+                  <div class="icon-box">Team</div>
+                </a>
+                <a routerLink="/careers" (click)="closeDropdown()">
+                  <div class="icon-box">Careers</div>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- PACKAGES -->
+        <li class="services-wrapper" (mouseenter)="openDropdown('packages')" (mouseleave)="closeDropdown()">
+
+          <a class="nav-link">Packages</a>
+
+          <div class="mega-dropdown" [class.show]="activeDropdown === 'packages'">
+
+            <div class="dropdown-grid packages-grid">
+
+              <!-- Ecommerce -->
+              <div class="package-card ecommerce">
+                <div class="package-header">
+                  <i class="fas fa-shopping-cart"></i>
+                  <div>
+                    <h4>E-commerce Solution</h4>
+                    <span class="badge orange">BEST SELLER</span>
+                  </div>
+                </div>
+
+                <p>
+                  Full end-to-end platform with payment gateway,
+                  admin panel & mobile-ready UI.
+                </p>
+
+                <div class="package-actions">
+                  <button (click)="selectEcommerce()">Details</button>
+                  <button class="primary" (click)="getQuote(ecommerceService)">
+                    Get Quote
+                  </button>
+                </div>
+              </div>
+
+              <!-- Design -->
+              <div class="package-card design">
+                <div class="package-header">
+                  <i class="fas fa-file-code"></i>
+                  <div>
+                    <h4>Design to HTML</h4>
+                    <span class="badge green">PIXEL PERFECT</span>
+                  </div>
+                </div>
+
+                <p>
+                  Figma / XD to responsive, semantic &
+                  blazing-fast HTML + Tailwind code.
+                </p>
+
+                <div class="package-actions">
+                  <button (click)="selectDesignToHtml()">Details</button>
+                  <button class="primary" (click)="getQuote(designToHtmlService)">
+                    Get Quote
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </li>
+
+        <!-- ABOUT -->
+        <li>
+          <a class="nav-link" routerLink="/aboutus">About Us</a>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="nav-right">
+      <div class="support">
+        <span class="support-text">pixelroot</span><br />
+        <span class="support-phone">+91 8160523813</span>
+      </div>
+
+      <button type="button" class="contact-btn" (click)="openContactPopup()">
+        Contact Us
+      </button>
+
+    </div>
+    <!-- USER SECTION -->
+    <div class="user-box" *ngIf="isLoggedIn">
+      <span class="user-name">
+        👤 {{ userEmail }}
+      </span>
+
+      <button class="logout-btn" (click)="logout()">
+        Logout
+      </button>
+    </div>
+
+    <!-- LOGIN BUTTON -->
+    <div *ngIf="!isLoggedIn">
+      <a routerLink="/login" class="login-btn">
+        Login
+      </a>
+    </div>
+
+
+  </nav>
+
+  <div class="navbar-divider"></div>
+</main>
+
+<!-- CONTACT POPUP -->
+<div class="overlay" *ngIf="showContactPopup" (click)="closeContactPopup()">
+
+  <div class="contact-modal" (click)="$event.stopPropagation()">
+
+    <span class="close" (click)="closeContactPopup()">✕</span>
+
+    <h2>Schedule a Free Consultation</h2>
+
+    <form [formGroup]="contactForm" (ngSubmit)="submitContactForm()">
+
+      <div class="row">
+        <div>
+          <input type="text" placeholder="First name" formControlName="firstName"
+            [class.invalid]="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.invalid" />
+
+          <small *ngIf="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.errors?.['required']">
+            First name is required
+          </small>
+
+          <small *ngIf="contactForm.get('firstName')?.touched && contactForm.get('firstName')?.errors?.['minlength']">
+            Minimum 2 characters required
+          </small>
+        </div>
+
+        <div>
+          <input type="text" placeholder="Last name" formControlName="lastName"
+            [class.invalid]="contactForm.get('lastName')?.touched && contactForm.get('lastName')?.invalid" />
+
+          <small *ngIf="contactForm.get('lastName')?.touched && contactForm.get('lastName')?.invalid">
+            Last name is required
+          </small>
+        </div>
+      </div>
+
+      <input type="text" placeholder="Company / Organization" formControlName="company"
+        [class.invalid]="contactForm.get('company')?.touched && contactForm.get('company')?.invalid" />
+
+      <small *ngIf="contactForm.get('company')?.touched && contactForm.get('company')?.invalid">
+        Company is required
+      </small>
+
+      <input type="email" placeholder="Company email" formControlName="email"
+        [class.invalid]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid" />
+
+      <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['required']">
+        Email is required
+      </small>
+
+      <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['email']">
+        Enter valid email address
+      </small>
+
+      <div class="phone-wrapper"
+        [class.invalid-wrap]="contactForm.get('phone')?.touched && contactForm.get('phone')?.invalid">
+        <select class="country-code">
+          <option value="+91">🇮🇳 India (+91)</option>
+          <option value="+1">🇺🇸 USA (+1)</option>
+          <option value="+44">🇬🇧 UK (+44)</option>
+          <option value="+61">🇦🇺 Australia (+61)</option>
+          <option value="+971">🇦🇪 UAE (+971)</option>
+          <option value="+65">🇸🇬 Singapore (+65)</option>
+          <option value="+49">🇩🇪 Germany (+49)</option>
+          <option value="+33">🇫🇷 France (+33)</option>
+          <option value="+81">🇯🇵 Japan (+81)</option>
+          <option value="+86">🇨🇳 China (+86)</option>
+          <option value="+7">🇷🇺 Russia (+7)</option>
+          <option value="+55">🇧🇷 Brazil (+55)</option>
+          <option value="+27">🇿🇦 S.Africa (+27)</option>
+          <option value="+92">🇵🇰 Pakistan (+92)</option>
+          <option value="+880">🇧🇩 Bangladesh (+880)</option>
+          <option value="+94">🇱🇰 Sri Lanka (+94)</option>
+          <option value="+977">🇳🇵 Nepal (+977)</option>
+        </select>
+        <input type="tel" placeholder="Phone number" formControlName="phone"
+          (keypress)="$event.charCode >= 48 && $event.charCode <= 57" maxlength="10"
+          [class.invalid]="contactForm.get('phone')?.touched && contactForm.get('phone')?.invalid" />
+      </div>
+
+      <small *ngIf="contactForm.get('phone')?.touched && contactForm.get('phone')?.errors?.['required']">
+        Phone number is required
+      </small>
+      <small *ngIf="contactForm.get('phone')?.touched && contactForm.get('phone')?.errors?.['pattern']">
+        Enter valid 10 digit phone number
+      </small>
+
+      <select formControlName="service"
+        [class.invalid]="contactForm.get('service')?.touched && contactForm.get('service')?.invalid">
+        <option value="">Select Option</option>
+        <option>Web Development</option>
+        <option>App Development</option>
+        <option>UI / UX</option>
+      </select>
+
+      <small *ngIf="contactForm.get('service')?.touched && contactForm.get('service')?.invalid">
+        Please select a service
+      </small>
+
+      <textarea placeholder="To better assist you, please describe how we can help..." formControlName="message"
+        [class.invalid]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid">
+      </textarea>
+
+      <small *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
+        Message is required
+      </small>
+
+      <small *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
+        Message must be at least 10 characters
+      </small>
+
+      <button type="submit" class="submit-btn" [disabled]="contactForm.invalid">
+        Submit
+      </button>
+
+    </form>
+
+  </div>
+</div>

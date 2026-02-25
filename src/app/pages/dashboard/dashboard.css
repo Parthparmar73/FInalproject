@@ -1,0 +1,114 @@
+/* Main Dashboard Container */
+.dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    font-family: "Segoe UI", sans-serif;
+  }
+  
+  /* Input Section */
+  .input-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+  
+  .input-box input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    font-size: 15px;
+  }
+  
+  .input-box input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+  
+  /* Add Button */
+  .btn-add {
+    background: #0d6efd;
+    color: #fff;
+  }
+  
+  .btn-add:hover {
+    background: #084298;
+  }
+  
+  /* List Items */
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e3e3e3;
+  }
+  
+  /* Name Text */
+  .list-item span {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Edit Button */
+  .btn-edit {
+    background: #198754;
+    color: white;
+  }
+  
+  .btn-edit:hover {
+    background: #146c43;
+  }
+  
+  /* Delete Button */
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .btn-delete:hover {
+    background: #b02a37;
+  }
+  
+  /* Logout Button */
+  .logout-btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 12px;
+    background: #212529;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .logout-btn:hover {
+    background: #000;
+  }
+  

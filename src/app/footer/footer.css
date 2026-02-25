@@ -1,0 +1,208 @@
+.footer {
+  background: #050505;
+  color: #ffffff;
+  padding-top: 90px;
+  font-family: 'Segoe UI', sans-serif;
+}
+/* Make all footer links show pointer cursor */
+.footer a {
+  cursor: pointer;
+}
+
+/* Button ke liye bhi ensure kar lo */
+.cta-btn {
+  cursor: pointer;
+}
+
+/* ================= TOP ================= */
+
+.footer-top {
+  max-width: 1300px;
+  margin: auto;
+  display: flex;
+  gap: 70px;
+  padding: 0 6% 70px;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 45px;
+  flex: 2;
+}
+
+.footer-logo img {
+  max-width: 200px;   /* size control */
+  height: auto;
+  display: block;
+  margin: 15px auto;
+}
+
+.link-group h3 {
+  margin-bottom: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.link-group a {
+  display: block;
+  color: #c7c7c7;
+  margin-bottom: 12px;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.link-group a:hover {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+
+/* ================= DOT PATTERN ================= */
+
+.dots {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 18px;
+  justify-items: center;
+  margin-bottom: 20px;
+}
+
+.dots span {
+  width: 12px;
+  height: 12px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  animation: pulse 2.5s infinite ease-in-out;
+}
+
+.dots span:nth-child(even) {
+  animation-delay: 1.2s;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ================= BOTTOM ================= */
+
+.footer-bottom {
+  background: #ffffff;
+  color: #111111;
+  padding: 40px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+
+.review a {
+  text-decoration: none;
+  color: #111;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.review a:hover {
+  color: #0b5d5f;
+}
+
+.address {
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.contact {
+  font-size: 14px;
+}
+
+.contact a {
+  text-decoration: none;
+  color: #111;
+  transition: color 0.3s ease;
+}
+
+.contact a:hover {
+  color: #0b5d5f;
+}
+
+/* SOCIAL */
+.social a {
+  margin-right: 18px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  color: #111;
+  transition: all 0.3s ease;
+}
+
+.social a:hover {
+  color: #0b5d5f;
+}
+
+/* ================= COPYRIGHT ================= */
+
+.copyright {
+  background: #ffffff;
+  text-align: center;
+  padding: 20px 6%;
+  font-size: 13px;
+  color: #555;
+  border-top: 1px solid #eee;
+}
+
+.copyright a {
+  text-decoration: none;
+  color: #111;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.copyright a:hover {
+  color: #0b5d5f;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 992px) {
+
+  .footer-top {
+    flex-direction: column;
+    text-align: center;
+    gap: 55px;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .social {
+    margin-top: 10px;
+  }
+
+  .link-group a:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-center h2 {
+    font-size: 24px;
+  }
+}

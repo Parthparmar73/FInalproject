@@ -1,0 +1,152 @@
+/* ===== Background ===== */
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== Register Card ===== */
+.auth-card {
+  width: 400px;
+  background: #ffffff;
+  padding: 45px 40px;
+  border-radius: 18px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 5px 15px rgba(15, 118, 110, 0.08);
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ===== Title ===== */
+.auth-card h2 {
+  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f3d3e;
+}
+
+.sub-text {
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ===== Input Group ===== */
+.form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #0f766e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
+/* ===== Register Button ===== */
+.auth-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 13px;
+  background: linear-gradient(90deg, #0f766e, #0d9488);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.25);
+}
+
+/* ===== Register Button ===== */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.3);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* ===== Bottom Links ===== */
+.bottom-links {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.bottom-links a {
+  font-size: 14px;
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 500;
+  position: relative;
+  transition: all 0.3s ease;
+  padding-bottom: 3px;
+}
+
+/* Left to Right Underline */
+.bottom-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;            /* Start from left */
+  bottom: -3px;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  transition: width 0.3s ease;
+}
+
+.bottom-links a:hover {
+  color: #0f766e;
+}
+
+.bottom-links a:hover::after {
+  width: 100%;        /* Expand fully to right */
+}

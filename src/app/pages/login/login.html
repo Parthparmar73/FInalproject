@@ -1,0 +1,121 @@
+<div class="login-container">
+  <div class="login-box">
+
+    <h2>Welcome Back 👋</h2>
+    <p>Login to continue to Pixelroot</p>
+
+    <form (ngSubmit)="login()">
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" required />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" name="password" required placeholder="Enter your password" />
+      </div>
+
+      <button type="button" (click)="login()" class="login-btn">Login</button>
+
+      <div class="extra-links">
+        <a (click)="openForgotPassword()">Forgot Password?</a>
+        <a routerLink="/register">Create Account</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== FORGOT PASSWORD POPUP ===== -->
+<div class="fp-overlay" *ngIf="showForgotPassword" (click)="closeForgotPassword()">
+  <div class="fp-modal" (click)="$event.stopPropagation()">
+
+    <span class="fp-close" (click)="closeForgotPassword()">✕</span>
+
+    <!-- STEP 1: Email -->
+    <div *ngIf="fpStep === 1">
+      <div class="fp-icon">🔐</div>
+      <h3>Forgot Password?</h3>
+      <p class="fp-subtitle">Enter your email. We'll send a 6-digit OTP.</p>
+
+      <div class="fp-input-group">
+        <label>Email Address</label>
+        <input type="email" [(ngModel)]="forgotEmail" placeholder="Enter your email"
+          [class.error-input]="forgotError" />
+        <small class="fp-error" *ngIf="forgotError">{{ forgotError }}</small>
+      </div>
+
+      <button class="fp-btn" (click)="sendOtp()" [disabled]="isSending">
+        <span *ngIf="!isSending">📧 Send OTP</span>
+        <span *ngIf="isSending">⏳ Sending OTP...</span>
+      </button>
+    </div>
+
+    <!-- STEP 2: OTP Entry -->
+    <div *ngIf="fpStep === 2">
+      <div class="fp-icon">📩</div>
+      <h3>Verify OTP</h3>
+      <p class="fp-subtitle">Enter the 6-digit OTP sent to <strong>{{ forgotEmail }}</strong></p>
+
+      <div class="otp-boxes">
+        <input *ngFor="let box of otpValues; let i = index" [id]="'otp-' + i" type="text" inputmode="numeric"
+          maxlength="1" class="otp-box" [value]="otpValues[i]" (input)="onOtpInput(i, $event)"
+          (keydown)="onOtpKeydown(i, $event)" autocomplete="off" />
+      </div>
+
+      <small class="fp-error" *ngIf="forgotError">{{ forgotError }}</small>
+
+      <button class="fp-btn" (click)="verifyOtp()">✅ Verify OTP</button>
+
+      <div class="fp-footer-links">
+        <a (click)="resendOtp()">🔄 Resend OTP</a>
+      </div>
+      <p class="fp-timer">OTP expires in 10 minutes</p>
+    </div>
+
+    <!-- STEP 3: New Password -->
+    <div *ngIf="fpStep === 3">
+
+      <!-- Success Screen -->
+      <div class="fp-success-msg" *ngIf="pwUpdateMsg">
+        <div class="fp-icon">🎉</div>
+        <h3>Password Updated!</h3>
+        <p class="fp-subtitle">Your password has been changed successfully.</p>
+        <p class="fp-subtitle">You can now login with your new password.</p>
+        <button class="fp-btn" style="margin-top:20px" (click)="closeForgotPassword()">← Back to Login</button>
+      </div>
+
+      <!-- Password Form -->
+      <div *ngIf="!pwUpdateMsg">
+        <div class="fp-icon">🔑</div>
+        <h3>Set New Password</h3>
+        <p class="fp-subtitle">OTP verified! Enter your new password below.</p>
+
+        <div class="fp-input-group">
+          <label>New Password</label>
+          <div class="pw-wrapper">
+            <input [type]="showNew ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="Min 6 characters"
+              [class.error-input]="forgotError && !newPassword" />
+            <span class="pw-eye" (click)="showNew = !showNew">
+              {{ showNew ? '🙈' : '👁️' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="fp-input-group">
+          <label>Confirm Password</label>
+          <div class="pw-wrapper">
+            <input [type]="showConfirm ? 'text' : 'password'" [(ngModel)]="confirmPassword"
+              placeholder="Re-enter password" [class.error-input]="forgotError && newPassword !== confirmPassword" />
+            <span class="pw-eye" (click)="showConfirm = !showConfirm">
+              {{ showConfirm ? '🙈' : '👁️' }}
+            </span>
+          </div>
+        </div>
+
+        <small class="fp-error" *ngIf="forgotError">{{ forgotError }}</small>
+        <button class="fp-btn" (click)="updatePassword()">🔒 Update Password</button>
+      </div>
+    </div>
+
+  </div>
+</div>
