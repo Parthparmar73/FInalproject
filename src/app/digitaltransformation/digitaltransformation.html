@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <button class="primary">💳 Purchase Blueprint</button>
+      <button class="primary" (click)="openPayment()">💳 Purchase Blueprint</button>
       <button class="secondary">Custom Quote</button>
 
       <p class="secure">🔒 Secured 256-bit Connection</p>
@@ -98,3 +98,8 @@
 
   </div>
 </div>
+
+<!-- Payment Modal -->
+<app-payment-modal *ngIf="showPayment" [price]="'$5,000'" [productName]="'Digital Transformation Blueprint'"
+  (closed)="showPayment=false">
+</app-payment-modal>

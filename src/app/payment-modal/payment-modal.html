@@ -1,0 +1,229 @@
+<!-- BACKDROP -->
+<div class="pm-backdrop" (click)="close()"></div>
+
+<!-- MODAL -->
+<div class="pm-modal">
+
+    <!-- CLOSE BUTTON -->
+    <button class="pm-close" (click)="close()">✕</button>
+
+    <!-- ===== FORM STEP ===== -->
+    <ng-container *ngIf="step === 'form'">
+
+        <!-- HEADER -->
+        <div class="pm-header">
+            <div class="pm-lock">🔒</div>
+            <div>
+                <h2>Secure Checkout</h2>
+                <p class="pm-subtitle">{{ productName }}</p>
+            </div>
+        </div>
+
+        <!-- AMOUNT BANNER -->
+        <div class="pm-amount-banner">
+            <span class="pm-amount-label">Total Amount</span>
+            <span class="pm-amount-value">{{ price }}</span>
+        </div>
+
+        <!-- TABS -->
+        <div class="pm-tabs">
+            <button [class.active]="activeTab === 'card'" (click)="setTab('card')">
+                <span>💳</span> Credit / Debit Card
+            </button>
+            <button [class.active]="activeTab === 'upi'" (click)="setTab('upi')">
+                <span>📲</span> UPI
+            </button>
+        </div>
+
+        <!-- ===== CARD TAB ===== -->
+        <div *ngIf="activeTab === 'card'" class="pm-tab-content">
+
+            <!-- VIRTUAL CARD DISPLAY -->
+            <div class="pm-card-visual" [class]="'pm-card-visual ' + getCardType()">
+                <div class="pm-card-top">
+                    <div class="pm-chip">
+                        <div class="pm-chip-line"></div>
+                        <div class="pm-chip-line shorter"></div>
+                    </div>
+                    <div class="pm-card-brand">
+                        <span *ngIf="getCardType() === 'visa'" class="brand-text brand-visa">VISA</span>
+                        <span *ngIf="getCardType() === 'mastercard'" class="brand-text brand-mc">●●</span>
+                        <span *ngIf="getCardType() === 'rupay'" class="brand-text brand-rupay">RuPay</span>
+                        <span *ngIf="getCardType() === 'amex'" class="brand-text brand-amex">AMEX</span>
+                        <span *ngIf="getCardType() === 'generic'" class="brand-text brand-generic">💳</span>
+                    </div>
+                </div>
+                <div class="pm-card-number-display">
+                    {{ cardNumber || '•••• •••• •••• ••••' }}
+                </div>
+                <div class="pm-card-bottom">
+                    <div>
+                        <div class="pm-card-label">Cardholder Name</div>
+                        <div class="pm-card-value">{{ cardName || 'YOUR NAME' }}</div>
+                    </div>
+                    <div>
+                        <div class="pm-card-label">Expires</div>
+                        <div class="pm-card-value">{{ expiry || 'MM/YY' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD FORM -->
+            <div class="pm-form">
+
+                <!-- Card Number -->
+                <div class="pm-field">
+                    <label>Card Number</label>
+                    <div class="pm-input-wrap" [class.err]="errors['cardNumber']">
+                        <input type="text" placeholder="1234 5678 9012 3456" [value]="cardNumber"
+                            (input)="formatCardNumber($event)" maxlength="19" inputmode="numeric" />
+                        <span class="pm-field-icon">💳</span>
+                    </div>
+                    <span class="pm-error" *ngIf="errors['cardNumber']">{{ errors['cardNumber'] }}</span>
+                </div>
+
+                <!-- Cardholder Name -->
+                <div class="pm-field">
+                    <label>Cardholder Name</label>
+                    <div class="pm-input-wrap" [class.err]="errors['cardName']">
+                        <input type="text" placeholder="As printed on card" [(ngModel)]="cardName" />
+                        <span class="pm-field-icon">👤</span>
+                    </div>
+                    <span class="pm-error" *ngIf="errors['cardName']">{{ errors['cardName'] }}</span>
+                </div>
+
+                <!-- Expiry + CVV -->
+                <div class="pm-row">
+                    <div class="pm-field">
+                        <label>Expiry Date</label>
+                        <div class="pm-input-wrap" [class.err]="errors['expiry']">
+                            <input type="text" placeholder="MM/YY" [value]="expiry" (input)="formatExpiry($event)"
+                                maxlength="5" inputmode="numeric" />
+                            <span class="pm-field-icon">📅</span>
+                        </div>
+                        <span class="pm-error" *ngIf="errors['expiry']">{{ errors['expiry'] }}</span>
+                    </div>
+
+                    <div class="pm-field">
+                        <label>CVV</label>
+                        <div class="pm-input-wrap" [class.err]="errors['cvv']">
+                            <input [type]="showCvv ? 'text' : 'password'" placeholder="•••" [(ngModel)]="cvv"
+                                maxlength="4" inputmode="numeric" />
+                        </div>
+                        <span class="pm-error" *ngIf="errors['cvv']">{{ errors['cvv'] }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== UPI TAB ===== -->
+        <div *ngIf="activeTab === 'upi'" class="pm-tab-content">
+
+            <!-- UPI Logos -->
+            <div class="pm-upi-logos">
+                <div class="pm-upi-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/200px-UPI-Logo-vector.svg.png"
+                        alt="UPI" />
+                </div>
+                <p class="pm-upi-select-hint">Kisi ek app par click karo QR scan karne ke liye 👇</p>
+                <div class="pm-upi-apps">
+                    <span *ngFor="let app of upiApps" class="pm-upi-app"
+                        [class.pm-upi-app-active]="selectedUpiApp === app.name" (click)="selectUpiApp(app.name)">
+                        {{ app.icon }} {{ app.name }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- QR CODE SECTION -->
+            <div class="pm-qr-section" *ngIf="selectedUpiApp">
+                <div class="pm-qr-header">
+                    <span class="pm-qr-app-name">{{ selectedUpiApp }} se scan karo</span>
+                    <button class="pm-qr-close" (click)="selectedUpiApp = ''">✕</button>
+                </div>
+                <div class="pm-qr-box">
+                    <img [src]="getQrUrl()" alt="UPI QR Code" class="pm-qr-img" />
+                    <div class="pm-qr-amount">Pay {{ price }}</div>
+                    <div class="pm-qr-steps">
+                        <div class="pm-qr-step">1️⃣ {{ selectedUpiApp }} app kholo</div>
+                        <div class="pm-qr-step">2️⃣ Scan QR karo</div>
+                        <div class="pm-qr-step">3️⃣ Amount confirm karo &amp; Pay karo</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="pm-form">
+                <div class="pm-field">
+                    <label>UPI ID</label>
+                    <div class="pm-input-wrap" [class.err]="errors['upiId']">
+                        <input type="text" placeholder="yourname@upi  /  9999999999@ybl" [(ngModel)]="upiId" />
+                        <span class="pm-field-icon">📲</span>
+                    </div>
+                    <span class="pm-error" *ngIf="errors['upiId']">{{ errors['upiId'] }}</span>
+                </div>
+
+                <div class="pm-upi-hint">
+                    💡 After clicking Pay, you'll receive a payment request on your UPI app. Open your app & approve it.
+                </div>
+            </div>
+        </div>
+
+        <!-- PAY BUTTON -->
+        <button class="pm-pay-btn" (click)="pay()">
+            🔒 &nbsp;Pay {{ price }} Securely
+        </button>
+
+        <!-- TRUST BADGES -->
+        <div class="pm-trust">
+            <span>🔐 256-bit SSL</span>
+            <span>🛡️ PCI DSS</span>
+            <span>✅ 3D Secure</span>
+            <span>💯 Safe & Encrypted</span>
+        </div>
+
+    </ng-container>
+
+    <!-- ===== PROCESSING STEP ===== -->
+    <ng-container *ngIf="step === 'processing'">
+        <div class="pm-processing">
+            <div class="pm-spinner"></div>
+            <h3>Processing Payment...</h3>
+            <p>Please do not close this window.</p>
+            <div class="pm-proc-steps">
+                <div class="pm-proc-step done">✓ Validating Information</div>
+                <div class="pm-proc-step active">⟳ Contacting Bank</div>
+                <div class="pm-proc-step">◌ Authorizing Transaction</div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- ===== SUCCESS STEP ===== -->
+    <ng-container *ngIf="step === 'success'">
+        <div class="pm-success">
+            <div class="pm-success-icon">✓</div>
+            <h2>Payment Successful!</h2>
+            <p class="pm-success-sub">Your blueprint has been purchased successfully.</p>
+            <div class="pm-receipt">
+                <div class="pm-receipt-row">
+                    <span>Product</span>
+                    <span>{{ productName }}</span>
+                </div>
+                <div class="pm-receipt-row">
+                    <span>Amount Paid</span>
+                    <span class="pm-receipt-amount">{{ price }}</span>
+                </div>
+                <div class="pm-receipt-row">
+                    <span>Status</span>
+                    <span class="pm-receipt-status">✅ Confirmed</span>
+                </div>
+                <div class="pm-receipt-row">
+                    <span>Transaction ID</span>
+                    <span class="pm-receipt-txn">TXN{{ txnId }}</span>
+                </div>
+            </div>
+            <button class="pm-done-btn" (click)="close()">Done →</button>
+        </div>
+    </ng-container>
+
+</div>
