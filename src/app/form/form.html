@@ -70,7 +70,8 @@
 
         <textarea name="message" ngModel required placeholder="To better assist you, please describe how we can help..."></textarea>
 
-        <button type="submit">Submit</button>
+        <button type="submit"
+        [disabled]="!(isLoggedIn$ | async)">Submit</button>
       </form>
     </div>
 

@@ -35,7 +35,7 @@ export const routes: Routes = [
   { path: 'team', component: Team },
   { path: 'careers', component: Careers },
   { path: 'aboutus', component: Aboutus },
-  { path: 'form', component: Form },
+  { path: 'form', component: Form, canActivate:[AuthGuard] }, // agar form protected hai
 
   { path: '**', redirectTo: 'login' }  // 👈 ALWAYS LAST
 ];

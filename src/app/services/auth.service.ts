@@ -1,18 +1,24 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Auth, authState } from '@angular/fire/auth';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  User
 } from 'firebase/auth';
-import { observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private auth: Auth) {}
+  user$: Observable<User | null>;
+
+  constructor(private auth: Auth) {
+    this.user$ = authState(this.auth);
+  }
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(
@@ -35,6 +41,12 @@ export class AuthService {
   }
 
   getUser() {
-    return authState(this.auth);
+    return this.user$;
+  }
+  //logged in or not
+  isLoggedIn(): Observable<boolean> {
+    return this.user$.pipe(
+      map(user => !!user) // Convert user object to boolean
+    );
   }
 }

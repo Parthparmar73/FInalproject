@@ -10,11 +10,18 @@ export const AuthGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   return authState(auth).pipe(
+
     map(user => {
+
       if (user) return true;
 
+      alert('Please login first ❗');
+
       router.navigate(['/login']);
+
       return false;
+
     })
+
   );
 };
