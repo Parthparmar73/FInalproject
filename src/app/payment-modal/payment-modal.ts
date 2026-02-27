@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { interval, Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-payment-modal',
@@ -9,36 +11,37 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './payment-modal.html',
     styleUrl: './payment-modal.css'
 })
-export class PaymentModalComponent {
+export class PaymentModalComponent implements OnDestroy {
     @Input() price: string = '$4,000';
     @Input() productName: string = 'Blueprint';
     @Output() closed = new EventEmitter<void>();
 
-    activeTab: 'card' | 'upi' = 'card';
-    step: 'form' | 'processing' | 'success' = 'form';
+    // 0=form, 1=validating, 2=bank, 3=authorizing, 4=done, 5=success
+    step: number = 0;
     txnId: string = '';
 
-    // Card fields
+    activeTab: 'card' | 'upi' = 'card';
     cardNumber: string = '';
     cardName: string = '';
     expiry: string = '';
     cvv: string = '';
     showCvv: boolean = false;
-
-    // UPI field
     upiId: string = '';
     selectedUpiApp: string = '';
+    errors: { [key: string]: string } = {};
 
     upiApps = [
-        { name: 'GPay', icon: '🟢', vpa: 'gpay' },
-        { name: 'PhonePe', icon: '🟣', vpa: 'ybl' },
-        { name: 'Paytm', icon: '🔵', vpa: 'paytm' },
-        { name: 'BHIM', icon: '🇮🇳', vpa: 'upi' },
+        { name: 'GPay', icon: '🟢' },
+        { name: 'PhonePe', icon: '🟣' },
+        { name: 'Paytm', icon: '🔵' },
+        { name: 'BHIM', icon: '🇮🇳' },
     ];
 
+    private timerSub?: Subscription;
 
-    // Validation errors
-    errors: { [key: string]: string } = {};
+    ngOnDestroy() {
+        this.timerSub?.unsubscribe();
+    }
 
     setTab(tab: 'card' | 'upi') {
         this.activeTab = tab;
@@ -55,7 +58,6 @@ export class PaymentModalComponent {
         const upiLink = `upi://pay?pa=pixelroot@okaxis&pn=Pixelroot&am=${amount}&cu=INR&tn=Blueprint+Purchase`;
         return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}&bgcolor=ffffff&color=000000&margin=10`;
     }
-
 
     formatCardNumber(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -98,15 +100,20 @@ export class PaymentModalComponent {
 
     pay() {
         if (!this.validate()) return;
-        this.txnId = Math.floor(Math.random() * 9000000 + 1000000).toString();
-        this.step = 'processing';
-        setTimeout(() => {
-            this.step = 'success';
-        }, 2500);
+
+        this.txnId = 'TXN' + Math.floor(Math.random() * 9000000 + 1000000).toString();
+        this.step = 1; // show processing, step 1 active
+
+        // RxJS interval runs inside Angular zone — guaranteed change detection
+        // Emits 4 times (take 4): steps 1→2→3→4→5
+        this.timerSub = interval(1300).pipe(take(4)).subscribe(() => {
+            this.step++;
+        });
     }
 
     close() {
-        this.step = 'form';
+        this.timerSub?.unsubscribe();
+        this.step = 0;
         this.cardNumber = '';
         this.cardName = '';
         this.expiry = '';

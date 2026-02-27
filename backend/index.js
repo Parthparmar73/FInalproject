@@ -128,6 +128,31 @@ app.post('/update-password', async (req, res) => {
   return res.json({ success: true, resetEmailSent: true });
 });
 
+// ─── GET /admin/users ──────────────────────────────────────────────────────
+// Returns all Firebase Auth users (for admin dashboard)
+app.get('/admin/users', async (req, res) => {
+  try {
+    const admin = require('firebase-admin');
+    if (!admin.apps.length) {
+      const svc = require('./serviceAccountKey.json');
+      admin.initializeApp({ credential: admin.credential.cert(svc) });
+    }
+    const listResult = await admin.auth().listUsers(1000);
+    const users = listResult.users.map(u => ({
+      uid: u.uid,
+      email: u.email || '',
+      displayName: u.displayName || '',
+      emailVerified: u.emailVerified,
+      createdAt: u.metadata.creationTime,
+      lastSignIn: u.metadata.lastSignInTime || '',
+    }));
+    return res.json({ success: true, users });
+  } catch (err) {
+    console.error('Admin users error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ─── Health check ──────────────────────────────────────────────────────────
 app.get('/', (req, res) => res.send('Pixelroot Auth Backend ✅'));
 

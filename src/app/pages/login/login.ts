@@ -46,16 +46,31 @@ export class LoginComponent {
     private auth: AuthService,
     private fireAuth: Auth,
     private router: Router,
+<<<<<<< HEAD
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef
   ) { 
+=======
+    private ngZone: NgZone
+  ) {
+>>>>>>> 0326bca (admin layout)
     emailjs.init(EMAILJS_PUBLIC_KEY);
   }
 
+  // Admin credentials
+  private readonly ADMIN_EMAIL = 'admin@pixelroot.com';
+
   // ===== LOGIN =====
   login() {
+    const enteredEmail = this.email.toLowerCase().trim();
     this.auth.login(this.email, this.password)
-      .then(() => this.router.navigate(['/dashboard']))
+      .then(() => {
+        if (enteredEmail === this.ADMIN_EMAIL) {
+          this.router.navigate(['/admin-dashboard']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
+      })
       .catch(err => alert(err.message));
   }
 
@@ -141,16 +156,23 @@ export class LoginComponent {
   private dispatchOtp() {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  
+
     this.generatedOtp = otp;
+<<<<<<< HEAD
     this.otpExpiry = Date.now() + 10 * 60 * 1000;
   
+=======
+
+    this.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
+
+>>>>>>> 0326bca (admin layout)
     const params = {
       email: this.forgotEmail,
       name: this.forgotEmail,
       otp_code: otp,
       message: `Your OTP is: ${otp}. Valid for 10 minutes.`
     };
+<<<<<<< HEAD
   
     // ✅ FORCE UI UPDATE (Main Fix)
     this.isSending = false;
@@ -159,9 +181,13 @@ export class LoginComponent {
     this.cdr.detectChanges();   // 🔥 THIS LINE IS MAGIC
   
     // Send mail in background
+=======
+
+>>>>>>> 0326bca (admin layout)
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
-  
+
       .then(() => {
+<<<<<<< HEAD
         console.log('OTP Sent ✅');
       })
   
@@ -171,6 +197,35 @@ export class LoginComponent {
         this.forgotError = 'OTP Failed. Try again.';
         this.cdr.detectChanges(); // again refresh
       });
+=======
+
+        console.log('OTP Sent ✅');
+
+        this.ngZone.run(() => {
+
+          this.isSending = false;
+
+          this.fpStep = 2; // ✅ only after success
+
+        });
+
+      })
+
+      .catch((err: any) => {
+
+        console.error('EmailJS error:', err);
+
+        this.ngZone.run(() => {
+
+          this.isSending = false;
+
+          this.forgotError = 'OTP send nahi hua. Try again.';
+
+        });
+
+      });
+
+>>>>>>> 0326bca (admin layout)
   }
 
   // ===== STEP 2: OTP INPUT =====

@@ -1,7 +1,7 @@
-<app-navbar></app-navbar>
+<app-navbar *ngIf="!isAdminRoute()"></app-navbar>
 
 <main class="page-content">
   <router-outlet></router-outlet>
 </main>
-<app-form></app-form>
-<app-footer></app-footer>
+<app-form *ngIf="!isAdminRoute()"></app-form>
+<app-footer *ngIf="!isAdminRoute()"></app-footer>

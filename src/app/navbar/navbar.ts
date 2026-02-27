@@ -38,6 +38,8 @@ export class NavbarComponent implements OnInit {
   isLoggedIn = false;
   userEmail: string | null = null;
 
+  // Auth status
+
   // Auth
   user: any = null;
 

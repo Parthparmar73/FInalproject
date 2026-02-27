@@ -1,0 +1,360 @@
+<div class="admin-container">
+
+    <!-- ══════ SIDEBAR ══════ -->
+    <aside class="sidebar">
+        <div class="logo-wrap">
+            <div class="logo-icon">PR</div>
+            <div>
+                <div class="logo-title">Pixelroot</div>
+                <div class="logo-sub">Admin Panel</div>
+            </div>
+        </div>
+
+        <div class="nav-section-label">MAIN MENU</div>
+        <nav>
+            <a [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')">
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a [class.active]="activeTab === 'users'" (click)="setTab('users')">
+                <span class="nav-icon">👥</span>
+                <span>Users</span>
+                <span class="nav-badge">{{ users.length }}</span>
+            </a>
+            <a [class.active]="activeTab === 'messages'" (click)="setTab('messages')">
+                <span class="nav-icon">📩</span>
+                <span>Messages</span>
+                @if (messages.length > 0) {
+                <span class="nav-badge msg">{{ messages.length }}</span>
+                }
+            </a>
+        </nav>
+
+        <div class="nav-section-label">OTHER</div>
+        <nav>
+            <a><span class="nav-icon">📦</span><span>Orders</span></a>
+            <a><span class="nav-icon">⚙️</span><span>Settings</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="avatar">A</div>
+                <div>
+                    <div class="admin-name">Admin</div>
+                    <div class="admin-email">admin&#64;pixelroot.com</div>
+                </div>
+            </div>
+            <div class="signout" (click)="signOut()" title="Sign Out">⏻</div>
+        </div>
+    </aside>
+
+    <!-- ══════ MAIN CONTENT ══════ -->
+    <div class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">
+                    @if (activeTab === 'dashboard') { Admin Dashboard }
+                    @if (activeTab === 'users') { Registered Users }
+                    @if (activeTab === 'messages') { Form Submissions }
+                </h1>
+                <p class="page-sub">
+                    @if (activeTab === 'dashboard') { Welcome back, Admin 👋 }
+                    @if (activeTab === 'users') { Firebase Authentication users }
+                    @if (activeTab === 'messages') { Contact form se aaye messages }
+                </p>
+            </div>
+            <div class="user-badge">
+                <div class="avatar sm">A</div>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <!-- ═══ DASHBOARD TAB ═══ -->
+        @if (activeTab === 'dashboard') {
+        <div class="cards">
+            <div class="card card-users" (click)="setTab('users')" style="cursor:pointer">
+                <div class="card-icon">👥</div>
+                <div>
+                    <h3>{{ users.length }}</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            <div class="card card-verified">
+                <div class="card-icon">✅</div>
+                <div>
+                    <h3>{{ verifiedUsersCount }}</h3>
+                    <p>Verified Users</p>
+                </div>
+            </div>
+            <div class="card card-messages" (click)="setTab('messages')" style="cursor:pointer">
+                <div class="card-icon">📩</div>
+                <div>
+                    <h3>{{ messages.length }}</h3>
+                    <p>Messages</p>
+                </div>
+            </div>
+            <div class="card card-projects">
+                <div class="card-icon">📁</div>
+                <div>
+                    <h3>4</h3>
+                    <p>Active Projects</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Overview: 2-column layout -->
+        <div class="overview-grid">
+
+            <!-- Recent Users -->
+            <section class="overview-card">
+                <div class="section-header">
+                    <h2>Recent Users</h2>
+                    <button class="refresh-btn" (click)="setTab('users')">View All →</button>
+                </div>
+                @if (isLoading) {
+                <div class="loader-wrap">
+                    <div class="spinner"></div>
+                    <p>Load ho raha hai...</p>
+                </div>
+                }
+                @if (!isLoading && !errorMsg) {
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (user of users.slice(0, 5); track user.uid; let i = $index) {
+                            <tr>
+                                <td class="num">{{ i + 1 }}</td>
+                                <td class="email-cell">{{ user.email }}</td>
+                                <td>
+                                    @if (isAdmin(user.email)) {
+                                    <span class="badge role-admin">👑 Admin</span>
+                                    } @else {
+                                    <span class="badge role-user">👤 User</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.emailVerified) {
+                                    <span class="badge verified">✔ Verified</span>
+                                    } @else {
+                                    <span class="badge unverified">✘ Unverified</span>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </section>
+
+            <!-- Recent Messages -->
+            <section class="overview-card">
+                <div class="section-header">
+                    <h2>Recent Messages</h2>
+                    <button class="refresh-btn" (click)="setTab('messages')">View All →</button>
+                </div>
+                @if (msgsLoading) {
+                <div class="loader-wrap">
+                    <div class="spinner"></div>
+                    <p>Load ho raha hai...</p>
+                </div>
+                }
+                @if (!msgsLoading && !msgsError && messages.length === 0) {
+                <div class="no-data" style="padding:30px;text-align:center">Koi message nahi 📭</div>
+                }
+                @if (!msgsLoading && !msgsError && messages.length > 0) {
+                <div class="mini-msg-list">
+                    @for (msg of messages.slice(0, 4); track msg.id) {
+                    <div class="mini-msg-card" (click)="setTab('messages')">
+                        <div class="mini-msg-av">{{ msg.fname?.charAt(0)?.toUpperCase() || '?' }}</div>
+                        <div class="mini-msg-info">
+                            <div class="mini-msg-name">{{ msg.fname }} {{ msg.lname }}</div>
+                            <div class="mini-msg-meta">{{ msg.email }} &nbsp;·&nbsp; <span
+                                    class="badge service-badge sm">{{ msg.service }}</span></div>
+                            <div class="mini-msg-preview">{{ (msg.message || '').slice(0, 80) }}{{ (msg.message ||
+                                '').length > 80 ? '…' : '' }}</div>
+                        </div>
+                        <div class="mini-msg-date">{{ formatDate(msg.createdAt) }}</div>
+                    </div>
+                    }
+                </div>
+                }
+            </section>
+
+        </div>
+        }
+
+        <!-- ═══ USERS TAB ═══ -->
+        @if (activeTab === 'users') {
+        <section class="users-section">
+            <div class="section-header">
+                <h2>All Users <span class="user-count-badge">{{ users.length }}</span></h2>
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search by email or name..." [(ngModel)]="searchQuery"
+                        (input)="onSearch()" />
+                    <button class="refresh-btn" (click)="fetchUsers()">↻ Refresh</button>
+                </div>
+            </div>
+            @if (isLoading) {
+            <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Users load ho rahe hain...</p>
+            </div>
+            }
+            @if (!isLoading && errorMsg) {
+            <div class="error-box">⚠️ {{ errorMsg }}</div>
+            }
+            @if (!isLoading && !errorMsg) {
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Registered On</th>
+                            <th>Last Login</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (user of filteredUsers; track user.uid; let i = $index) {
+                        <tr>
+                            <td class="num">{{ i + 1 }}</td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">{{ (user.displayName || user.email).charAt(0).toUpperCase()
+                                        }}</div>
+                                    <span>{{ user.displayName || '—' }}</span>
+                                </div>
+                            </td>
+                            <td class="email-cell">{{ user.email }}</td>
+                            <td>
+                                @if (isAdmin(user.email)) {
+                                <span class="badge role-admin">👑 Admin</span>
+                                } @else {
+                                <span class="badge role-user">👤 User</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.emailVerified) {
+                                <span class="badge verified">✔ Verified</span>
+                                } @else {
+                                <span class="badge unverified">✘ Unverified</span>
+                                }
+                            </td>
+                            <td>{{ formatDate(user.createdAt) }}</td>
+                            <td>{{ formatDate(user.lastSignIn) }}</td>
+                            <td>
+                                @if (!isAdmin(user.email)) {
+                                <button class="delete-btn" (click)="deleteUser(user.uid, user.email)"
+                                    title="Delete user">🗑️</button>
+                                } @else {
+                                <span class="no-delete">—</span>
+                                }
+                            </td>
+                        </tr>
+                        }
+                        @if (filteredUsers.length === 0) {
+                        <tr>
+                            <td colspan="8" class="no-data">Koi user nahi mila 🙁</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </section>
+        }
+
+        <!-- ═══ MESSAGES TAB ═══ -->
+        @if (activeTab === 'messages') {
+        <section class="users-section">
+            <div class="section-header">
+                <h2>Contact Messages <span class="user-count-badge">{{ messages.length }}</span></h2>
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search by name, email, service..." [(ngModel)]="msgSearch"
+                        (input)="onMsgSearch()" />
+                    <button class="refresh-btn" (click)="refreshMessages()">↻ Refresh</button>
+                </div>
+            </div>
+
+            @if (msgsLoading) {
+            <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Messages load ho rahe hain...</p>
+            </div>
+            }
+            @if (!msgsLoading && msgsError) {
+            <div class="error-box">⚠️ {{ msgsError }}</div>
+            }
+
+            @if (!msgsLoading && !msgsError) {
+            @if (filteredMessages.length === 0) {
+            <div class="no-data" style="padding:40px;text-align:center">Koi message nahi mila 📭</div>
+            }
+            <div class="msg-cards-grid">
+                @for (msg of filteredMessages; track msg.id; let i = $index) {
+                <div class="msg-card">
+
+                    <!-- Card Header -->
+                    <div class="msg-card-header">
+                        <div class="msg-avatar">{{ msg.fname?.charAt(0)?.toUpperCase() || '?' }}</div>
+                        <div class="msg-header-info">
+                            <div class="msg-fullname">{{ msg.fname }} {{ msg.lname }}</div>
+                            <div class="msg-date">📅 {{ formatDate(msg.createdAt) }}</div>
+                        </div>
+                        <span class="badge service-badge">{{ msg.service || 'N/A' }}</span>
+                        <button class="msg-delete-btn" (click)="deleteMessage(msg.id, msg.fname + ' ' + msg.lname)"
+                            title="Delete message">🗑️</button>
+                    </div>
+
+                    <!-- Fields Grid -->
+                    <div class="msg-fields">
+                        <div class="msg-field">
+                            <span class="field-label">📧 Email</span>
+                            <span class="field-value">{{ msg.email || '—' }}</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">🏢 Company</span>
+                            <span class="field-value">{{ msg.cname || '—' }}</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">📞 Phone</span>
+                            <span class="field-value">{{ msg.number || '—' }}</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">🛠️ Service</span>
+                            <span class="field-value">{{ msg.service || '—' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Message Body -->
+                    <div class="msg-body">
+                        <span class="field-label">💬 Message</span>
+                        <p class="msg-text">{{ msg.message || '—' }}</p>
+                    </div>
+
+                </div>
+                }
+            </div>
+            }
+        </section>
+        }
+
+    </div>
+</div>
