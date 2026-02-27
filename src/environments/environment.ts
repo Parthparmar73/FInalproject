@@ -1,4 +1,3 @@
-
 export const environment = {
     production: false,
     firebase: {
@@ -8,6 +7,6 @@ export const environment = {
         storageBucket: "pixelroot-792c3.firebasestorage.app",
         messagingSenderId: "374269780798",
         appId: "1:374269780798:web:94feb96872d1ca3a47026f",
+        measurementId: "G-Z5F11M9MRH"
     }
-  };
-
+};

@@ -9,13 +9,7 @@
       <!-- Full Name -->
       <div class="form-group">
         <label>Full Name</label>
-        <input 
-          type="text" 
-          name="fullName"
-          ngModel
-          required
-          #fullName="ngModel"
-          placeholder="Enter your full name">
+        <input type="text" name="fullName" ngModel required #fullName="ngModel" placeholder="Enter your full name">
 
         <small *ngIf="fullName.invalid && fullName.touched" style="color:red;">
           Full Name is required
@@ -25,69 +19,46 @@
       <!-- Email -->
       <div class="form-group">
         <label>Email</label>
-        <input
-  type="email"
-  name="email"
-  [(ngModel)]="email"
-  #emailRef="ngModel"
-  required
-  email
-  placeholder="Enter your email"
->
+        <input type="email" name="email" [(ngModel)]="email" #emailRef="ngModel" required email
+          placeholder="Enter your email">
 
 
-<small *ngIf="emailRef.errors?.['required'] && emailRef.touched" style="color:red;">
-  Email is required
-</small>
+        <small *ngIf="emailRef.errors?.['required'] && emailRef.touched" style="color:red;">
+          Email is required
+        </small>
 
-<small *ngIf="emailRef.errors?.['email'] && emailRef.touched" style="color:red;">
-  Invalid email
-</small>
+        <small *ngIf="emailRef.errors?.['email'] && emailRef.touched" style="color:red;">
+          Invalid email
+        </small>
       </div>
 
       <!-- Password -->
       <div class="form-group">
         <label>Password</label>
-        <input
-  type="password"
-  name="password"
-  [(ngModel)]="password"
-  #passwordRef="ngModel"
-  required
-  minlength="6"
-  placeholder="Enter your password"
->
-<small *ngIf="passwordRef.errors?.['required'] && passwordRef.touched" style="color:red;">
-  Password is required
-</small>
+        <input type="password" name="password" [(ngModel)]="password" #passwordRef="ngModel" required minlength="6"
+          placeholder="Enter your password">
+        <small *ngIf="passwordRef.errors?.['required'] && passwordRef.touched" style="color:red;">
+          Password is required
+        </small>
 
-<small *ngIf="passwordRef.errors?.['minlength'] && passwordRef.touched" style="color:red;">
-  Password must be at least 6 characters
-</small>
+        <small *ngIf="passwordRef.errors?.['minlength'] && passwordRef.touched" style="color:red;">
+          Password must be at least 6 characters
+        </small>
 
       </div>
 
       <!-- Confirm Password -->
       <div class="form-group">
         <label>Confirm Password</label>
-        <input
-  type="password"
-  name="confirmPassword"
-  [(ngModel)]="confirmPassword"
-  #confirmPasswordRef="ngModel"
-  required
-  placeholder="Confirm your password"
->
-<small
-  *ngIf="confirmPassword !== password && confirmPasswordRef.touched"
-  style="color:red;"
->
-  Passwords do not match
-</small>
+        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" #confirmPasswordRef="ngModel"
+          required placeholder="Confirm your password">
+        <small *ngIf="confirmPassword !== password && confirmPasswordRef.touched" style="color:red;">
+          Passwords do not match
+        </small>
 
       </div>
 
-      <button (click)="register()">Register</button>
+      <button type="submit">Register</button>
 
       <div class="bottom-links">
         <a routerLink="/login">Already have an account?</a>

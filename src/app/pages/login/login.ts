@@ -7,9 +7,9 @@ import { Auth } from '@angular/fire/auth';
 import emailjs from '@emailjs/browser';
 import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 
-const EMAILJS_SERVICE_ID = 'service_dchxafh';
-const EMAILJS_TEMPLATE_ID = 'template_ooqixki';
-const EMAILJS_PUBLIC_KEY = 'duOy0lrK1pF3nfnwn';
+const EMAILJS_SERVICE_ID = 'service_0ynlsv9';
+const EMAILJS_TEMPLATE_ID = 'template_tkcr2el';
+const EMAILJS_PUBLIC_KEY = 'I-J7SPwlUSaMHLNin';
 const BACKEND_URL = 'http://localhost:5000'; // Express backend
 
 @Component({
