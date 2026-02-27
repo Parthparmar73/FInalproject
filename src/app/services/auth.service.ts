@@ -21,8 +21,6 @@ export class AuthService {
     this.user$ = authState(this.auth);
   }
 
-  constructor(private auth: Auth) {}
-
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(

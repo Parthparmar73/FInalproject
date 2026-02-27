@@ -1,16 +1,15 @@
-
+import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Auth } from '@angular/fire/auth';
 import emailjs from '@emailjs/browser';
-import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 
 const EMAILJS_SERVICE_ID = 'service_0ynlsv9';
 const EMAILJS_TEMPLATE_ID = 'template_tkcr2el';
 const EMAILJS_PUBLIC_KEY = 'I-J7SPwlUSaMHLNin';
-const BACKEND_URL = 'http://localhost:5000'; // Express backend
+const BACKEND_URL = 'http://localhost:5000';
 
 @Component({
   selector: 'app-login',
@@ -20,69 +19,73 @@ const BACKEND_URL = 'http://localhost:5000'; // Express backend
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-
+showNew: boolean = false;
+showConfirm: boolean = false;
   // Login
-  email = '';
-  password = '';
+  email: string = '';
+  password: string = '';
 
-  // Forgot password — 3 steps
+  // Forgot password
   showForgotPassword = false;
   fpStep: 1 | 2 | 3 = 1;
+
   forgotEmail = '';
   generatedOtp = '';
   otpExpiry = 0;
-  otpValues = ['', '', '', '', '', ''];
+
+  otpValues: string[] = ['', '', '', '', '', ''];
+
   isSending = false;
   forgotError = '';
 
-  // Step 3 — new password
+  // New password
   newPassword = '';
   confirmPassword = '';
   pwUpdateMsg = '';
-  showNew = false;
-  showConfirm = false;
+
+  private readonly ADMIN_EMAIL = 'admin@pixelroot.com';
 
   constructor(
     private auth: AuthService,
     private fireAuth: Auth,
     private router: Router,
-<<<<<<< HEAD
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef
-  ) { 
-=======
-    private ngZone: NgZone
   ) {
->>>>>>> 0326bca (admin layout)
     emailjs.init(EMAILJS_PUBLIC_KEY);
   }
 
-  // Admin credentials
-  private readonly ADMIN_EMAIL = 'admin@pixelroot.com';
+  // ================= LOGIN =================
 
-  // ===== LOGIN =====
   login() {
-    const enteredEmail = this.email.toLowerCase().trim();
+    if (!this.email || !this.password) return;
+
+    const entered = this.email.toLowerCase().trim();
+
     this.auth.login(this.email, this.password)
       .then(() => {
-        if (enteredEmail === this.ADMIN_EMAIL) {
+        if (entered === this.ADMIN_EMAIL) {
           this.router.navigate(['/admin-dashboard']);
         } else {
           this.router.navigate(['/dashboard']);
         }
       })
-      .catch(err => alert(err.message));
+      .catch((err: any) => alert(err.message));
   }
 
-  // ===== OPEN / CLOSE =====
+  // ================= FORGOT UI =================
+
   openForgotPassword() {
     this.showForgotPassword = true;
     this.fpStep = 1;
+
     this.forgotEmail = '';
     this.generatedOtp = '';
     this.otpValues = ['', '', '', '', '', ''];
+
     this.forgotError = '';
     this.isSending = false;
+
     this.newPassword = '';
     this.confirmPassword = '';
     this.pwUpdateMsg = '';
@@ -92,18 +95,19 @@ export class LoginComponent {
     this.showForgotPassword = false;
   }
 
-  // ===== STEP 1: SEND OTP =====
+  // ================= SEND OTP =================
+
   sendOtp() {
 
     this.forgotError = '';
-  
-    if (!this.forgotEmail || !this.forgotEmail.includes('@')) {
-      this.forgotError = 'Please enter a valid email address.';
+
+    if (!this.forgotEmail.includes('@')) {
+      this.forgotError = 'Enter valid email';
       return;
     }
-  
+
     this.isSending = true;
-  
+
     fetch(`${BACKEND_URL}/check-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -111,150 +115,105 @@ export class LoginComponent {
         email: this.forgotEmail.toLowerCase().trim()
       })
     })
-  
-    .then(res => res.json())
-  
-    .then((data: any) => {
-  
-      // ✅ FORCE Angular Refresh
-      this.ngZone.run(() => {
-  
-        if (data.registered) {
-  
-          this.dispatchOtp(); // send otp
-  
-        } else {
-  
+
+      .then(res => res.json())
+
+      .then((data: any) => {
+
+        this.ngZone.run(() => {
+
+          if (data.registered) {
+            this.dispatchOtp();
+          } else {
+            this.isSending = false;
+            this.forgotError = 'Email not registered';
+          }
+
+        });
+
+      })
+
+      .catch(() => {
+
+        this.ngZone.run(() => {
           this.isSending = false;
-  
-          this.forgotError =
-            data.message || 'This email is not registered.';
-  
-        }
-  
+          this.forgotError = 'Server error';
+        });
+
       });
-  
-    })
-  
-    .catch(() => {
-  
-      // ✅ FORCE UI UPDATE
-      this.ngZone.run(() => {
-  
-        this.isSending = false;
-  
-        this.forgotError =
-          'Cannot connect to server. Please try again.';
-  
-      });
-  
-    });
-  
+
   }
 
-  // Sends the OTP after confirming email is registered
+  // ================= SEND MAIL =================
+
   private dispatchOtp() {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     this.generatedOtp = otp;
-<<<<<<< HEAD
+
     this.otpExpiry = Date.now() + 10 * 60 * 1000;
-  
-=======
 
-    this.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
-
->>>>>>> 0326bca (admin layout)
     const params = {
       email: this.forgotEmail,
       name: this.forgotEmail,
       otp_code: otp,
-      message: `Your OTP is: ${otp}. Valid for 10 minutes.`
+      message: `Your OTP is ${otp}`
     };
-<<<<<<< HEAD
-  
-    // ✅ FORCE UI UPDATE (Main Fix)
+
+    // Show OTP UI immediately
     this.isSending = false;
     this.fpStep = 2;
-  
-    this.cdr.detectChanges();   // 🔥 THIS LINE IS MAGIC
-  
-    // Send mail in background
-=======
 
->>>>>>> 0326bca (admin layout)
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+    this.cdr.detectChanges();
+
+    emailjs
+      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
 
       .then(() => {
-<<<<<<< HEAD
-        console.log('OTP Sent ✅');
-      })
-  
-      .catch(err => {
-        console.error(err);
-  
-        this.forgotError = 'OTP Failed. Try again.';
-        this.cdr.detectChanges(); // again refresh
-      });
-=======
-
-        console.log('OTP Sent ✅');
-
-        this.ngZone.run(() => {
-
-          this.isSending = false;
-
-          this.fpStep = 2; // ✅ only after success
-
-        });
-
+        console.log('OTP Sent');
       })
 
-      .catch((err: any) => {
-
-        console.error('EmailJS error:', err);
-
-        this.ngZone.run(() => {
-
-          this.isSending = false;
-
-          this.forgotError = 'OTP send nahi hua. Try again.';
-
-        });
-
+      .catch(() => {
+        this.forgotError = 'OTP failed';
+        this.cdr.detectChanges();
       });
 
->>>>>>> 0326bca (admin layout)
   }
 
-  // ===== STEP 2: OTP INPUT =====
-  onOtpInput(index: number, e: Event) {
+  // ================= OTP INPUT =================
+
+  onOtpInput(i: number, e: Event) {
+
     const input = e.target as HTMLInputElement;
+
     const digit = input.value.replace(/\D/g, '').slice(-1);
 
-    // Set only 1 digit in current box
     input.value = digit;
-    this.otpValues[index] = digit;
 
-    // Advance to next box — clear it first (setTimeout prevents keypress bleed)
-    if (digit && index < 5) {
+    this.otpValues[i] = digit;
+
+    if (digit && i < 5) {
       setTimeout(() => {
-        const next = document.getElementById(`otp-${index + 1}`) as HTMLInputElement;
-        if (next) {
-          next.value = '';               // clear before focus!
-          this.otpValues[index + 1] = '';
-          next.focus();
-        }
+        const next =
+          document.getElementById(`otp-${i + 1}`) as HTMLInputElement;
+
+        if (next) next.focus();
+
       }, 10);
     }
   }
 
-  onOtpKeydown(index: number, e: KeyboardEvent) {
-    if (e.key === 'Backspace' && !this.otpValues[index] && index > 0) {
-      this.otpValues[index - 1] = '';
-      const prev = document.getElementById(`otp-${index - 1}`) as HTMLInputElement;
-      if (prev) { prev.value = ''; prev.focus(); }
+  onOtpKeydown(i: number, e: KeyboardEvent) {
+
+    if (e.key === 'Backspace' && !this.otpValues[i] && i > 0) {
+
+      this.otpValues[i - 1] = '';
+
+      const prev =
+        document.getElementById(`otp-${i - 1}`) as HTMLInputElement;
+
+      if (prev) prev.focus();
     }
   }
 
@@ -262,71 +221,85 @@ export class LoginComponent {
     return this.otpValues.join('');
   }
 
-  // ===== STEP 2: VERIFY OTP =====
+  // ================= VERIFY OTP =================
+
   verifyOtp() {
-    const entered = this.otpString;
-    if (entered.length < 6) {
-      this.forgotError = 'Please enter all 6 digits.';
+
+    if (this.otpString.length < 6) {
+      this.forgotError = 'Enter full OTP';
       return;
     }
+
     if (Date.now() > this.otpExpiry) {
-      this.forgotError = 'OTP expired. Please request a new one.';
+      this.forgotError = 'OTP expired';
       return;
     }
-    if (entered !== this.generatedOtp) {
-      this.forgotError = 'Incorrect OTP. Try again.';
+
+    if (this.otpString !== this.generatedOtp) {
+      this.forgotError = 'Wrong OTP';
       return;
     }
-    // OTP matched → go to step 3
-    this.forgotError = '';
+
     this.fpStep = 3;
+    this.forgotError = '';
   }
 
   resendOtp() {
+    this.fpStep = 1;
     this.otpValues = ['', '', '', '', '', ''];
     this.forgotError = '';
-    this.fpStep = 1;
   }
 
-  // ===== STEP 3: UPDATE PASSWORD =====
+  // ================= UPDATE PASSWORD =================
+
   updatePassword() {
+
     this.forgotError = '';
     this.pwUpdateMsg = '';
 
-    if (!this.newPassword || this.newPassword.length < 6) {
-      this.forgotError = 'Password must be at least 6 characters.';
+    if (this.newPassword.length < 6) {
+      this.forgotError = 'Min 6 chars';
       return;
     }
+
     if (this.newPassword !== this.confirmPassword) {
-      this.forgotError = 'Passwords do not match.';
+      this.forgotError = 'Not matching';
       return;
     }
 
     fetch(`${BACKEND_URL}/update-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: this.forgotEmail, newPassword: this.newPassword })
-    })
-      .then(res => res.json())
-      .then((data: any) => {
-        this.ngZone.run(() => {
-          if (data.success) {
-            if (data.resetEmailSent) {
-              // Admin SDK not available — reset email sent as fallback
-              this.pwUpdateMsg = '✅ Password reset email sent! Check your inbox and click the link to set your new password.';
-            } else {
-              // Admin SDK updated password directly
-              this.pwUpdateMsg = '✅ Password updated successfully! You can now login with your new password.';
-            }
-          } else {
-            this.forgotError = data.message || 'Failed to update password. Please try again.';
-          }
-        });
+      body: JSON.stringify({
+        email: this.forgotEmail,
+        newPassword: this.newPassword
       })
-      .catch(() => {
+    })
+
+      .then(res => res.json())
+
+      .then((data: any) => {
+
         this.ngZone.run(() => {
-          this.forgotError = 'Cannot connect to server. Please ensure the backend is running.';
+
+          if (data.success) {
+            this.pwUpdateMsg = 'Password updated';
+          } else {
+            this.forgotError = 'Update failed';
+          }
+
         });
+
+      })
+
+      .catch(() => {
+
+        this.ngZone.run(() => {
+          this.forgotError = 'Server error';
+        });
+
       });
+
   }
+
 }
