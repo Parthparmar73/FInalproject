@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './navbar/navbar';
 import { Home } from './home/home';
 import { Form } from './form/form';
 import { Footer } from './footer/footer';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
@@ -16,11 +17,18 @@ import { Footer } from './footer/footer';
     NavbarComponent,
     Home,
     Form,
-    Footer
+    Footer,
+    CommonModule
   ],
 
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class App {}
+export class App {
+  constructor(public router: Router) { }
+
+  isAdminRoute(): boolean {
+    return this.router.url.startsWith('/admin-dashboard');
+  }
+}
 

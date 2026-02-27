@@ -26,12 +26,21 @@ export class Register {
   register() {
     this.auth.register(this.email, this.password)
       .then(() => {
-        // Save email to backend local store so forgot-password can verify registration
+        const emailLower = this.email.toLowerCase().trim();
+
+        // Save email to backend local store (for forgot-password check)
         fetch(`${BACKEND_URL}/register-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: this.email.toLowerCase().trim() })
-        }).catch(() => { }); // Non-blocking — registration still succeeds
+          body: JSON.stringify({ email: emailLower })
+        }).catch(() => { });
+
+        // Auto-verify email via Admin SDK so "Verified" shows in admin dashboard
+        fetch(`${BACKEND_URL}/admin/verify-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailLower })
+        }).catch(() => { }); // Non-blocking
 
         alert('Registered Successfully');
         this.router.navigate(['/login']);

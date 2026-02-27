@@ -7,10 +7,9 @@
     <!-- CLOSE BUTTON -->
     <button class="pm-close" (click)="close()">✕</button>
 
-    <!-- ===== FORM STEP ===== -->
-    <ng-container *ngIf="step === 'form'">
+    <!-- ===== FORM (step === 0) ===== -->
+    <div *ngIf="step === 0">
 
-        <!-- HEADER -->
         <div class="pm-header">
             <div class="pm-lock">🔒</div>
             <div>
@@ -19,13 +18,11 @@
             </div>
         </div>
 
-        <!-- AMOUNT BANNER -->
         <div class="pm-amount-banner">
             <span class="pm-amount-label">Total Amount</span>
             <span class="pm-amount-value">{{ price }}</span>
         </div>
 
-        <!-- TABS -->
         <div class="pm-tabs">
             <button [class.active]="activeTab === 'card'" (click)="setTab('card')">
                 <span>💳</span> Credit / Debit Card
@@ -35,10 +32,9 @@
             </button>
         </div>
 
-        <!-- ===== CARD TAB ===== -->
+        <!-- CARD TAB -->
         <div *ngIf="activeTab === 'card'" class="pm-tab-content">
 
-            <!-- VIRTUAL CARD DISPLAY -->
             <div class="pm-card-visual" [class]="'pm-card-visual ' + getCardType()">
                 <div class="pm-card-top">
                     <div class="pm-chip">
@@ -53,9 +49,7 @@
                         <span *ngIf="getCardType() === 'generic'" class="brand-text brand-generic">💳</span>
                     </div>
                 </div>
-                <div class="pm-card-number-display">
-                    {{ cardNumber || '•••• •••• •••• ••••' }}
-                </div>
+                <div class="pm-card-number-display">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
                 <div class="pm-card-bottom">
                     <div>
                         <div class="pm-card-label">Cardholder Name</div>
@@ -68,10 +62,7 @@
                 </div>
             </div>
 
-            <!-- CARD FORM -->
             <div class="pm-form">
-
-                <!-- Card Number -->
                 <div class="pm-field">
                     <label>Card Number</label>
                     <div class="pm-input-wrap" [class.err]="errors['cardNumber']">
@@ -82,7 +73,6 @@
                     <span class="pm-error" *ngIf="errors['cardNumber']">{{ errors['cardNumber'] }}</span>
                 </div>
 
-                <!-- Cardholder Name -->
                 <div class="pm-field">
                     <label>Cardholder Name</label>
                     <div class="pm-input-wrap" [class.err]="errors['cardName']">
@@ -92,7 +82,6 @@
                     <span class="pm-error" *ngIf="errors['cardName']">{{ errors['cardName'] }}</span>
                 </div>
 
-                <!-- Expiry + CVV -->
                 <div class="pm-row">
                     <div class="pm-field">
                         <label>Expiry Date</label>
@@ -103,7 +92,6 @@
                         </div>
                         <span class="pm-error" *ngIf="errors['expiry']">{{ errors['expiry'] }}</span>
                     </div>
-
                     <div class="pm-field">
                         <label>CVV</label>
                         <div class="pm-input-wrap" [class.err]="errors['cvv']">
@@ -113,14 +101,11 @@
                         <span class="pm-error" *ngIf="errors['cvv']">{{ errors['cvv'] }}</span>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <!-- ===== UPI TAB ===== -->
+        <!-- UPI TAB -->
         <div *ngIf="activeTab === 'upi'" class="pm-tab-content">
-
-            <!-- UPI Logos -->
             <div class="pm-upi-logos">
                 <div class="pm-upi-logo">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/200px-UPI-Logo-vector.svg.png"
@@ -135,7 +120,6 @@
                 </div>
             </div>
 
-            <!-- QR CODE SECTION -->
             <div class="pm-qr-section" *ngIf="selectedUpiApp">
                 <div class="pm-qr-header">
                     <span class="pm-qr-app-name">{{ selectedUpiApp }} se scan karo</span>
@@ -152,78 +136,113 @@
                 </div>
             </div>
 
-
             <div class="pm-form">
                 <div class="pm-field">
                     <label>UPI ID</label>
                     <div class="pm-input-wrap" [class.err]="errors['upiId']">
-                        <input type="text" placeholder="yourname@upi  /  9999999999@ybl" [(ngModel)]="upiId" />
+                        <input type="text" placeholder="yourname@upi" [(ngModel)]="upiId" />
                         <span class="pm-field-icon">📲</span>
                     </div>
                     <span class="pm-error" *ngIf="errors['upiId']">{{ errors['upiId'] }}</span>
                 </div>
-
                 <div class="pm-upi-hint">
-                    💡 After clicking Pay, you'll receive a payment request on your UPI app. Open your app & approve it.
+                    💡 After clicking Pay, you'll receive a payment request on your UPI app.
                 </div>
             </div>
         </div>
 
-        <!-- PAY BUTTON -->
         <button class="pm-pay-btn" (click)="pay()">
             🔒 &nbsp;Pay {{ price }} Securely
         </button>
 
-        <!-- TRUST BADGES -->
         <div class="pm-trust">
             <span>🔐 256-bit SSL</span>
             <span>🛡️ PCI DSS</span>
             <span>✅ 3D Secure</span>
-            <span>💯 Safe & Encrypted</span>
+            <span>💯 Safe &amp; Encrypted</span>
         </div>
 
-    </ng-container>
+    </div>
 
-    <!-- ===== PROCESSING STEP ===== -->
-    <ng-container *ngIf="step === 'processing'">
-        <div class="pm-processing">
-            <div class="pm-spinner"></div>
-            <h3>Processing Payment...</h3>
-            <p>Please do not close this window.</p>
-            <div class="pm-proc-steps">
-                <div class="pm-proc-step done">✓ Validating Information</div>
-                <div class="pm-proc-step active">⟳ Contacting Bank</div>
-                <div class="pm-proc-step">◌ Authorizing Transaction</div>
-            </div>
+    <!-- ===== PROCESSING (step 1,2,3,4) ===== -->
+    <div *ngIf="step >= 1 && step <= 4" class="pm-processing">
+
+        <div class="pm-proc-lock-wrap">
+            <div class="pm-proc-ring"></div>
+            <div class="pm-proc-icon">🔐</div>
         </div>
-    </ng-container>
 
-    <!-- ===== SUCCESS STEP ===== -->
-    <ng-container *ngIf="step === 'success'">
-        <div class="pm-success">
-            <div class="pm-success-icon">✓</div>
-            <h2>Payment Successful!</h2>
-            <p class="pm-success-sub">Your blueprint has been purchased successfully.</p>
-            <div class="pm-receipt">
-                <div class="pm-receipt-row">
-                    <span>Product</span>
-                    <span>{{ productName }}</span>
+        <h3>Processing Payment...</h3>
+        <p>Please wait. Do not close this window.</p>
+
+        <div class="pm-proc-steps">
+
+            <div class="pm-proc-step-row" [class.proc-active]="step === 1" [class.proc-done]="step >= 2">
+                <div class="proc-step-indicator">
+                    <span *ngIf="step < 1" class="proc-dot-pending">○</span>
+                    <span *ngIf="step === 1" class="proc-mini-spinner"></span>
+                    <span *ngIf="step >= 2" class="proc-check">✓</span>
                 </div>
-                <div class="pm-receipt-row">
-                    <span>Amount Paid</span>
-                    <span class="pm-receipt-amount">{{ price }}</span>
-                </div>
-                <div class="pm-receipt-row">
-                    <span>Status</span>
-                    <span class="pm-receipt-status">✅ Confirmed</span>
-                </div>
-                <div class="pm-receipt-row">
-                    <span>Transaction ID</span>
-                    <span class="pm-receipt-txn">TXN{{ txnId }}</span>
+                <div class="proc-step-label">
+                    <span class="proc-step-icon">🔍</span> Validating Card Information
                 </div>
             </div>
-            <button class="pm-done-btn" (click)="close()">Done →</button>
+
+            <div class="pm-proc-step-row" [class.proc-active]="step === 2" [class.proc-done]="step >= 3">
+                <div class="proc-step-indicator">
+                    <span *ngIf="step < 2" class="proc-dot-pending">○</span>
+                    <span *ngIf="step === 2" class="proc-mini-spinner"></span>
+                    <span *ngIf="step >= 3" class="proc-check">✓</span>
+                </div>
+                <div class="proc-step-label">
+                    <span class="proc-step-icon">🏦</span> Contacting Bank Securely
+                </div>
+            </div>
+
+            <div class="pm-proc-step-row" [class.proc-active]="step === 3" [class.proc-done]="step >= 4">
+                <div class="proc-step-indicator">
+                    <span *ngIf="step < 3" class="proc-dot-pending">○</span>
+                    <span *ngIf="step === 3" class="proc-mini-spinner"></span>
+                    <span *ngIf="step >= 4" class="proc-check">✓</span>
+                </div>
+                <div class="proc-step-label">
+                    <span class="proc-step-icon">🔐</span> Authorizing Transaction
+                </div>
+            </div>
+
         </div>
-    </ng-container>
+
+        <div class="pm-prog-bar-wrap">
+            <div class="pm-prog-bar" [style.width.%]="step === 1 ? 20 : step === 2 ? 52 : step === 3 ? 78 : 100">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== SUCCESS (step === 5) ===== -->
+    <div *ngIf="step === 5" class="pm-success">
+        <div class="pm-success-icon">✓</div>
+        <h2>Payment Successful!</h2>
+        <p class="pm-success-sub">Your purchase has been confirmed successfully.</p>
+        <div class="pm-receipt">
+            <div class="pm-receipt-row">
+                <span>Product</span>
+                <span>{{ productName }}</span>
+            </div>
+            <div class="pm-receipt-row">
+                <span>Amount Paid</span>
+                <span class="pm-receipt-amount">{{ price }}</span>
+            </div>
+            <div class="pm-receipt-row">
+                <span>Status</span>
+                <span class="pm-receipt-status">✅ Confirmed</span>
+            </div>
+            <div class="pm-receipt-row">
+                <span>Transaction ID</span>
+                <span class="pm-receipt-txn">{{ txnId }}</span>
+            </div>
+        </div>
+        <button class="pm-done-btn" (click)="close()">Done →</button>
+    </div>
 
 </div>

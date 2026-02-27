@@ -16,11 +16,13 @@ import { Careers } from './careers/careers';
 import { Aboutus } from './aboutus/aboutus';
 import { Form } from './form/form'; // agar form component hai
 import { Register } from './pages/register/register'; // agar register component hai  
+import { AdminDashboard } from './admin-dashboard/admin-dashboard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },   // 👈 yaha shift karo
-  { path: 'dashboard', component: DashboardComponent,canActivate:[AuthGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'admin-dashboard', component: AdminDashboard, canActivate: [AuthGuard] },
 
   { path: '', component: Home },
 

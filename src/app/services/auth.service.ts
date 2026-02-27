@@ -14,11 +14,15 @@ import { map } from 'rxjs/operators';
 })
 export class AuthService {
 
+
   user$: Observable<User | null>;
 
   constructor(private auth: Auth) {
     this.user$ = authState(this.auth);
   }
+
+  constructor(private auth: Auth) {}
+
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(
@@ -49,4 +53,5 @@ export class AuthService {
       map(user => !!user) // Convert user object to boolean
     );
   }
+
 }
