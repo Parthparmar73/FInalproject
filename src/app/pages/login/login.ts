@@ -1,10 +1,11 @@
-import { Component, NgZone } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Auth } from '@angular/fire/auth';
 import emailjs from '@emailjs/browser';
+import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 
 const EMAILJS_SERVICE_ID = 'service_dchxafh';
 const EMAILJS_TEMPLATE_ID = 'template_ooqixki';
@@ -45,7 +46,8 @@ export class LoginComponent {
     private auth: AuthService,
     private fireAuth: Auth,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) { 
     emailjs.init(EMAILJS_PUBLIC_KEY);
   }
@@ -77,37 +79,62 @@ export class LoginComponent {
 
   // ===== STEP 1: SEND OTP =====
   sendOtp() {
+
     this.forgotError = '';
+  
     if (!this.forgotEmail || !this.forgotEmail.includes('@')) {
       this.forgotError = 'Please enter a valid email address.';
       return;
     }
+  
     this.isSending = true;
-    this.forgotError = '';
-
-    // Check with backend if this email is registered in Firebase
+  
     fetch(`${BACKEND_URL}/check-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: this.forgotEmail.toLowerCase().trim() })
-    })
-      .then(res => res.json())
-      .then((data: any) => {
-        this.ngZone.run(() => {
-          if (data.registered) {
-            this.dispatchOtp(); // Email is registered — send OTP
-          } else {
-            this.isSending = false;
-            this.forgotError = data.message || 'This email is not registered. Please sign up first.';
-          }
-        });
+      body: JSON.stringify({
+        email: this.forgotEmail.toLowerCase().trim()
       })
-      .catch(() => {
-        this.ngZone.run(() => {
+    })
+  
+    .then(res => res.json())
+  
+    .then((data: any) => {
+  
+      // ✅ FORCE Angular Refresh
+      this.ngZone.run(() => {
+  
+        if (data.registered) {
+  
+          this.dispatchOtp(); // send otp
+  
+        } else {
+  
           this.isSending = false;
-          this.forgotError = 'Cannot connect to server. Please try again.';
-        });
+  
+          this.forgotError =
+            data.message || 'This email is not registered.';
+  
+        }
+  
       });
+  
+    })
+  
+    .catch(() => {
+  
+      // ✅ FORCE UI UPDATE
+      this.ngZone.run(() => {
+  
+        this.isSending = false;
+  
+        this.forgotError =
+          'Cannot connect to server. Please try again.';
+  
+      });
+  
+    });
+  
   }
 
   // Sends the OTP after confirming email is registered
@@ -116,8 +143,7 @@ export class LoginComponent {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
   
     this.generatedOtp = otp;
-  
-    this.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
+    this.otpExpiry = Date.now() + 10 * 60 * 1000;
   
     const params = {
       email: this.forgotEmail,
@@ -126,36 +152,25 @@ export class LoginComponent {
       message: `Your OTP is: ${otp}. Valid for 10 minutes.`
     };
   
+    // ✅ FORCE UI UPDATE (Main Fix)
+    this.isSending = false;
+    this.fpStep = 2;
+  
+    this.cdr.detectChanges();   // 🔥 THIS LINE IS MAGIC
+  
+    // Send mail in background
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
   
       .then(() => {
-  
         console.log('OTP Sent ✅');
-  
-        this.ngZone.run(() => {
-  
-          this.isSending = false;
-  
-          this.fpStep = 2; // ✅ only after success
-  
-        });
-  
       })
   
-      .catch((err: any) => {
+      .catch(err => {
+        console.error(err);
   
-        console.error('EmailJS error:', err);
-  
-        this.ngZone.run(() => {
-  
-          this.isSending = false;
-  
-          this.forgotError = 'OTP send nahi hua. Try again.';
-  
-        });
-  
+        this.forgotError = 'OTP Failed. Try again.';
+        this.cdr.detectChanges(); // again refresh
       });
-  
   }
 
   // ===== STEP 2: OTP INPUT =====
