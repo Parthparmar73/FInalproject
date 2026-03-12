@@ -3,15 +3,17 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
 import { PaymentModalComponent } from '../payment-modal/payment-modal';
+import { CustomQuoteComponent } from '../custom-quote/custom-quote';
 
 @Component({
   selector: 'app-performance',
-  imports: [RouterModule, CommonModule, PaymentModalComponent],
+  imports: [RouterModule, CommonModule, PaymentModalComponent, CustomQuoteComponent],
   templateUrl: './performance.html',
   styleUrl: './performance.css',
 })
 export class Performance {
   showPayment = false;
+  showQuote = false;
 
   constructor(private auth: Auth, private router: Router) { }
 
