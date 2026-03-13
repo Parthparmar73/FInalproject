@@ -39,6 +39,8 @@ export const routes: Routes = [
   { path: 'careers', component: Careers },
   { path: 'aboutus', component: Aboutus },
   { path: 'form', component: Form },
+  
+  { path: 'package/:id', component: PackageDetail },
 
   { path: '**', redirectTo: 'login' }  // ALWAYS LAST
 ];
