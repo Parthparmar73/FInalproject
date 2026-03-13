@@ -12,7 +12,7 @@ import { take } from 'rxjs/operators';
     styleUrl: './payment-modal.css'
 })
 export class PaymentModalComponent implements OnDestroy {
-    @Input() price: string = '$4,000';
+    @Input() price: string = '₹4,000';
     @Input() productName: string = 'Blueprint';
     @Output() closed = new EventEmitter<void>();
 

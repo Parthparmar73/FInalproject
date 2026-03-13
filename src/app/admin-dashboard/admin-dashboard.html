@@ -28,12 +28,21 @@
                 <span class="nav-badge msg">{{ messages.length }}</span>
                 }
             </a>
+            <a [class.active]="activeTab === 'quotes'" (click)="setTab('quotes')">
+                <span class="nav-icon">💬</span>
+                <span>Quote Requests</span>
+                @if (quotes.length > 0) {
+                <span class="nav-badge msg">{{ quotes.length }}</span>
+                }
+            </a>
         </nav>
 
         <div class="nav-section-label">OTHER</div>
         <nav>
             <a><span class="nav-icon">📦</span><span>Orders</span></a>
-            <a><span class="nav-icon">⚙️</span><span>Settings</span></a>
+            <a [class.active]="activeTab === 'settings'" (click)="setTab('settings')">
+                <span class="nav-icon">⚙️</span><span>Settings</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -58,11 +67,15 @@
                     @if (activeTab === 'dashboard') { Admin Dashboard }
                     @if (activeTab === 'users') { Registered Users }
                     @if (activeTab === 'messages') { Form Submissions }
+                    @if (activeTab === 'quotes') { Quote Requests }
+                    @if (activeTab === 'settings') { Settings — Packages }
                 </h1>
                 <p class="page-sub">
                     @if (activeTab === 'dashboard') { Welcome back, Admin 👋 }
                     @if (activeTab === 'users') { Firebase Authentication users }
                     @if (activeTab === 'messages') { Contact form se aaye messages }
+                    @if (activeTab === 'quotes') { Custom Quote form se aaye requests }
+                    @if (activeTab === 'settings') { Service packages manage karo }
                 </p>
             </div>
             <div class="user-badge">
@@ -81,25 +94,12 @@
                     <p>Total Users</p>
                 </div>
             </div>
-            <div class="card card-verified">
-                <div class="card-icon">✅</div>
-                <div>
-                    <h3>{{ verifiedUsersCount }}</h3>
-                    <p>Verified Users</p>
-                </div>
-            </div>
+
             <div class="card card-messages" (click)="setTab('messages')" style="cursor:pointer">
                 <div class="card-icon">📩</div>
                 <div>
                     <h3>{{ messages.length }}</h3>
                     <p>Messages</p>
-                </div>
-            </div>
-            <div class="card card-projects">
-                <div class="card-icon">📁</div>
-                <div>
-                    <h3>4</h3>
-                    <p>Active Projects</p>
                 </div>
             </div>
         </div>
@@ -127,7 +127,6 @@
                                 <th>#</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -137,16 +136,9 @@
                                 <td class="email-cell">{{ user.email }}</td>
                                 <td>
                                     @if (isAdmin(user.email)) {
-                                    <span class="badge role-admin">👑 Admin</span>
+                                    <span class="badge role-admin">🔒 Admin</span>
                                     } @else {
                                     <span class="badge role-user">👤 User</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (user.emailVerified) {
-                                    <span class="badge verified">✔ Verified</span>
-                                    } @else {
-                                    <span class="badge unverified">✘ Unverified</span>
                                     }
                                 </td>
                             </tr>
@@ -224,7 +216,6 @@
                             <th>User</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Status</th>
                             <th>Registered On</th>
                             <th>Last Login</th>
                             <th>Action</th>
@@ -244,18 +235,12 @@
                             <td class="email-cell">{{ user.email }}</td>
                             <td>
                                 @if (isAdmin(user.email)) {
-                                <span class="badge role-admin">👑 Admin</span>
+                                <span class="badge role-admin">🔒 Admin</span>
                                 } @else {
                                 <span class="badge role-user">👤 User</span>
                                 }
                             </td>
-                            <td>
-                                @if (user.emailVerified) {
-                                <span class="badge verified">✔ Verified</span>
-                                } @else {
-                                <span class="badge unverified">✘ Unverified</span>
-                                }
-                            </td>
+
                             <td>{{ formatDate(user.createdAt) }}</td>
                             <td>{{ formatDate(user.lastSignIn) }}</td>
                             <td>
@@ -356,5 +341,323 @@
         </section>
         }
 
+        <!-- ═══ QUOTES TAB ═══ -->
+        @if (activeTab === 'quotes') {
+        <section class="users-section">
+            <div class="section-header">
+                <h2>Quote Requests <span class="user-count-badge">{{ quotes.length }}</span></h2>
+                <button class="refresh-btn" (click)="fetchQuotes()">↻ Refresh</button>
+            </div>
+
+            <!-- Loading -->
+            @if (quotesLoading) {
+            <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Quote requests load ho rahe hain...</p>
+            </div>
+            }
+
+            <!-- Error -->
+            @if (!quotesLoading && quotesError) {
+            <div class="error-box">⚠️ {{ quotesError }}</div>
+            }
+
+            <!-- Empty State -->
+            @if (!quotesLoading && !quotesError && quotes.length === 0) {
+            <div class="no-data">
+                <div style="font-size:48px;margin-bottom:12px">💬</div>
+                <p>Abhi koi quote request nahi hai.</p>
+            </div>
+            }
+
+            <!-- Quote Cards -->
+            @if (!quotesLoading && !quotesError) {
+            <div class="quote-cards-grid">
+                @for (q of quotes; track q.id) {
+                <div class="quote-card">
+
+                    <!-- Top badge -->
+                    <div class="quote-card-top">
+                        <div class="quote-pkg-badge">📦 {{ q.packageName || 'General Inquiry' }}</div>
+                        <span class="quote-status" [class.quote-status--new]="q.status === 'new'">
+                            {{ q.status === 'new' ? '🔵 New' : '✅ Seen' }}
+                        </span>
+                    </div>
+
+                    <!-- Customer Info -->
+                    <div class="quote-info-row">
+                        <div class="quote-avatar">{{ q.name?.charAt(0)?.toUpperCase() || '?' }}</div>
+                        <div class="quote-info-body">
+                            <div class="quote-name">{{ q.name }}</div>
+                            <div class="quote-email">{{ q.email }}</div>
+                            @if (q.phone) {
+                            <div class="quote-phone">📱 {{ q.phone }}</div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="quote-message-box">
+                        <span class="field-label">💬 Message</span>
+                        <p class="quote-message-text">{{ q.message }}</p>
+                    </div>
+
+                    <!-- Date + Delete -->
+                    <div class="quote-footer">
+                        <span class="quote-date">🗓 {{ formatDate(q.createdAt) }}</span>
+                        <button class="msg-delete-btn" (click)="deleteQuote(q)" title="Delete">🗑️ Delete</button>
+                    </div>
+
+                </div>
+                }
+            </div>
+            }
+
+        </section>
+        }
+
+        <!-- ═══ SETTINGS TAB ═══ -->
+        @if (activeTab === 'settings') {
+        <section class="users-section">
+
+            <!-- Sub-Tab Bar -->
+            <div class="settings-subtabs">
+                <button [class.st-active]="settingsSubTab === 'packages'" (click)="setSettingsSubTab('packages')">
+                    📦 Packages
+                </button>
+                <button [class.st-active]="settingsSubTab === 'services'" (click)="setSettingsSubTab('services')">
+                    🛠️ Services
+                </button>
+                <button [class.st-active]="settingsSubTab === 'challenges'" (click)="setSettingsSubTab('challenges')">
+                    💡 Business Challenges
+                </button>
+                <button [class.st-active]="settingsSubTab === 'industries'" (click)="setSettingsSubTab('industries')">
+                    🏭 Industry Focus
+                </button>
+            </div>
+
+            <!-- ══ PACKAGES SUB-TAB ══ -->
+            @if (settingsSubTab === 'packages') {
+            <div class="section-header" style="margin-top:22px">
+                <h2>Service Packages <span class="user-count-badge">{{ packages.length }}</span></h2>
+                <button class="refresh-btn add-pkg-btn" (click)="openAddPackage()">➕ Add Package</button>
+            </div>
+            @if (pkgLoading) {
+            <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div>
+            }
+            @if (!pkgLoading && pkgError) {
+            <div class="error-box">⚠️ {{ pkgError }}</div>
+            }
+            @if (showPkgForm) {
+            <div class="pkg-modal-overlay" (click)="cancelPkgForm()">
+                <div class="pkg-modal" (click)="$event.stopPropagation()">
+                    <div class="pkg-modal-header">
+                        <h3>{{ editingPkg ? '✏️ Package Edit Karo' : '📦 Naya Package Add Karo' }}</h3>
+                        <button class="pkg-close-btn" (click)="cancelPkgForm()">✕</button>
+                    </div>
+                    <div class="pkg-form-grid">
+                        <div class="pkg-field">
+                            <label>📝 Package Name *</label>
+                            <input type="text" [(ngModel)]="pkgForm.name" placeholder="e.g. Basic Plan" />
+                        </div>
+                        <div class="pkg-field">
+                            <label>💰 Price (₹) *</label>
+                            <input type="number" [(ngModel)]="pkgForm.price" placeholder="e.g. 4999" min="0" />
+                        </div>
+                        <div class="pkg-field">
+                            <label>⏱️ Duration</label>
+                            <input type="text" [(ngModel)]="pkgForm.duration" placeholder="e.g. Per Month, One-time" />
+                        </div>
+                        <div class="pkg-field pkg-field--popular">
+                            <label class="pkg-toggle-label">
+                                <input type="checkbox" [(ngModel)]="pkgForm.popular" class="pkg-toggle-checkbox" />
+                                <span class="pkg-toggle-switch"></span>
+                                <span>⭐ Popular / Recommended</span>
+                            </label>
+                        </div>
+                        <div class="pkg-field pkg-field--full">
+                            <label>✅ Features (har feature alag line mein likho)</label>
+                            <textarea [(ngModel)]="pkgFeaturesText" rows="6"
+                                placeholder="Free Domain&#10;5 Pages&#10;SEO Optimization&#10;1 Year Support"></textarea>
+                        </div>
+                    </div>
+                    <div class="pkg-modal-footer">
+                        <button class="pkg-cancel-btn" (click)="cancelPkgForm()" [disabled]="pkgSaving">Cancel</button>
+                        <button class="pkg-save-btn" (click)="savePkg()" [disabled]="pkgSaving">
+                            @if (pkgSaving) { ⏳ Saving... } @else { 💾 {{ editingPkg ? 'Update' : 'Add Package' }} }
+                        </button>
+                    </div>
+                </div>
+            </div>
+            }
+            @if (!pkgLoading && !pkgError) {
+            @if (packages.length === 0) {
+            <div class="no-data" style="padding:40px;text-align:center">Koi package nahi hai. ➕ Add Karo! 📦</div>
+            }
+            <div class="pkg-cards-grid">
+                @for (pkg of packages; track pkg.id) {
+                <div class="pkg-card" [class.pkg-card--popular]="pkg.popular">
+                    @if (pkg.popular) { <div class="pkg-popular-badge">⭐ Most Popular</div> }
+                    <div class="pkg-card-header">
+                        <div class="pkg-icon">📦</div>
+                        <div class="pkg-info">
+                            <div class="pkg-name">{{ pkg.name }}</div>
+                            <div class="pkg-duration">{{ pkg.duration || 'One-time' }}</div>
+                        </div>
+                        <div class="pkg-actions">
+                            <button class="pkg-edit-btn" (click)="openEditPackage(pkg)">✏️</button>
+                            <button class="pkg-del-btn" (click)="deletePackage(pkg)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="pkg-price">₹{{ pkg.price | number }}<span class="pkg-price-sub">{{ pkg.duration ? '/' + pkg.duration : '' }}</span></div>
+                    <ul class="pkg-features">
+                        @for (f of pkg.features; track $index) { <li>✅ {{ f }}</li> }
+                        @if (!pkg.features || pkg.features.length === 0) { <li>—</li> }
+                    </ul>
+                </div>
+                }
+            </div>
+            }
+            }
+
+            <!-- ══ SERVICES SUB-TAB ══ -->
+            @if (settingsSubTab === 'services') {
+            <div class="section-header" style="margin-top:22px">
+                <h2>🛠️ Services <span class="user-count-badge">{{ navServices.length }}</span></h2>
+                <div style="display:flex;gap:8px">
+                    <button class="refresh-btn" (click)="fetchNavItems('nav-services')">↻ Refresh</button>
+                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-services')">➕ Add Item</button>
+                </div>
+            </div>
+            @if (navLoading['nav-services']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
+            @if (!navLoading['nav-services'] && navError['nav-services']) { <div class="error-box">⚠️ {{ navError['nav-services'] }}</div> }
+            @if (!navLoading['nav-services'] && !navError['nav-services']) {
+            @if (navServices.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi service nahi. ➕ Add karo!</div> }
+            <div class="nav-items-grid">
+                @for (item of navServices; track item.id) {
+                <div class="nav-item-card">
+                    <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
+                    <div class="nav-item-body">
+                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-route">{{ item.route }}</div>
+                        @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                    </div>
+                    <div class="nav-item-actions">
+                        <button class="pkg-edit-btn" (click)="openEditNavItem('nav-services', item)">✏️</button>
+                        <button class="pkg-del-btn" (click)="deleteNavItem('nav-services', item)">🗑️</button>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            }
+
+            <!-- ══ BUSINESS CHALLENGES SUB-TAB ══ -->
+            @if (settingsSubTab === 'challenges') {
+            <div class="section-header" style="margin-top:22px">
+                <h2>💡 Business Challenges <span class="user-count-badge">{{ navChallenges.length }}</span></h2>
+                <div style="display:flex;gap:8px">
+                    <button class="refresh-btn" (click)="fetchNavItems('nav-challenges')">↻ Refresh</button>
+                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-challenges')">➕ Add Item</button>
+                </div>
+            </div>
+            @if (navLoading['nav-challenges']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
+            @if (!navLoading['nav-challenges'] && navError['nav-challenges']) { <div class="error-box">⚠️ {{ navError['nav-challenges'] }}</div> }
+            @if (!navLoading['nav-challenges'] && !navError['nav-challenges']) {
+            @if (navChallenges.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi challenge nahi. ➕ Add karo!</div> }
+            <div class="nav-items-grid">
+                @for (item of navChallenges; track item.id) {
+                <div class="nav-item-card">
+                    <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
+                    <div class="nav-item-body">
+                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-route">{{ item.route }}</div>
+                        @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                    </div>
+                    <div class="nav-item-actions">
+                        <button class="pkg-edit-btn" (click)="openEditNavItem('nav-challenges', item)">✏️</button>
+                        <button class="pkg-del-btn" (click)="deleteNavItem('nav-challenges', item)">🗑️</button>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            }
+
+            <!-- ══ INDUSTRY FOCUS SUB-TAB ══ -->
+            @if (settingsSubTab === 'industries') {
+            <div class="section-header" style="margin-top:22px">
+                <h2>🏭 Industry Focus <span class="user-count-badge">{{ navIndustries.length }}</span></h2>
+                <div style="display:flex;gap:8px">
+                    <button class="refresh-btn" (click)="fetchNavItems('nav-industries')">↻ Refresh</button>
+                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-industries')">➕ Add Item</button>
+                </div>
+            </div>
+            @if (navLoading['nav-industries']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
+            @if (!navLoading['nav-industries'] && navError['nav-industries']) { <div class="error-box">⚠️ {{ navError['nav-industries'] }}</div> }
+            @if (!navLoading['nav-industries'] && !navError['nav-industries']) {
+            @if (navIndustries.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi industry nahi. ➕ Add karo!</div> }
+            <div class="nav-items-grid">
+                @for (item of navIndustries; track item.id) {
+                <div class="nav-item-card">
+                    <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
+                    <div class="nav-item-body">
+                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-route">{{ item.route }}</div>
+                        @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                    </div>
+                    <div class="nav-item-actions">
+                        <button class="pkg-edit-btn" (click)="openEditNavItem('nav-industries', item)">✏️</button>
+                        <button class="pkg-del-btn" (click)="deleteNavItem('nav-industries', item)">🗑️</button>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+            }
+
+        </section>
+        }
+
+        <!-- ══ NAV ITEM ADD/EDIT MODAL ══ -->
+        @if (showNavForm) {
+        <div class="pkg-modal-overlay" (click)="cancelNavForm()">
+            <div class="pkg-modal" (click)="$event.stopPropagation()">
+                <div class="pkg-modal-header">
+                    <h3>{{ editingNavItem ? '✏️ Item Edit Karo' : '➕ Naya Item Add Karo' }}</h3>
+                    <button class="pkg-close-btn" (click)="cancelNavForm()">✕</button>
+                </div>
+                <div class="pkg-form-grid">
+                    <div class="pkg-field">
+                        <label>🏷️ Label (naam) *</label>
+                        <input type="text" [(ngModel)]="navForm.label" placeholder="e.g. E-commerce Development" />
+                    </div>
+                    <div class="pkg-field">
+                        <label>🔗 Route (URL path) *</label>
+                        <input type="text" [(ngModel)]="navForm.route" placeholder="e.g. /ecommerce" />
+                    </div>
+                    <div class="pkg-field">
+                        <label>✨ Icon (emoji)</label>
+                        <input type="text" [(ngModel)]="navForm.icon" placeholder="e.g. 🛒" />
+                    </div>
+                    <div class="pkg-field">
+                        <label>📋 Description (optional)</label>
+                        <input type="text" [(ngModel)]="navForm.description" placeholder="Short description..." />
+                    </div>
+                </div>
+                <div class="pkg-modal-footer">
+                    <button class="pkg-cancel-btn" (click)="cancelNavForm()" [disabled]="navSaving">Cancel</button>
+                    <button class="pkg-save-btn" (click)="saveNavItem()" [disabled]="navSaving">
+                        @if (navSaving) { ⏳ Saving... } @else { 💾 {{ editingNavItem ? 'Update' : 'Add Item' }} }
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
     </div>
 </div>
+
+
+
+

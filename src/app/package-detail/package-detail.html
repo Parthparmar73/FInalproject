@@ -1,0 +1,131 @@
+<section id="details">
+  <div class="page">
+
+    <!-- Back -->
+    <a class="back" routerLink="/">
+      ⬅️ Back to Engineering Dashboard
+    </a>
+
+    <!-- Loading — only shows on page refresh -->
+    <div class="pd-loading" *ngIf="loading">
+      <div class="pd-spinner"></div>
+      <p>Package load ho raha hai...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="pd-error" *ngIf="!loading && error">
+      <span>⚠️</span>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="fetchPackage()">↻ Retry</button>
+    </div>
+
+    <!-- Package Content — shows instantly from router state -->
+    <div class="content" *ngIf="!loading && !error && pkg">
+
+      <!-- LEFT SECTION -->
+      <div class="left">
+
+        <div class="title-section">
+          <!-- Dynamic icon with colour gradient -->
+          <div class="icon" [style.background]="iconGradient">
+            {{ pkg.icon || '📦' }}
+          </div>
+          <div>
+            <h1>{{ pkg.name }}</h1>
+            <span class="badge">ACTIVE_DEPLOYMENT</span>
+            <span class="id">ID: {{ pkgDisplayId }}</span>
+          </div>
+        </div>
+
+        <div class="card large">
+          <h2>Strategic Overview</h2>
+          <p class="muted">
+            {{ pkg.description || 'Premium solution tailored for your business — built for scale, performance and
+            reliability.' }}
+          </p>
+
+          <div class="grid">
+
+            <!-- Features / Capabilities -->
+            <div>
+              <h3>Core Capabilities</h3>
+              <div class="capabilities">
+
+                <div class="cap-item" *ngFor="let f of pkg.features">
+                  <span class="check">✓</span>
+                  <span>{{ f }}</span>
+                </div>
+
+                <div class="cap-item" *ngIf="!pkg.features || pkg.features.length === 0">
+                  <span class="check" style="background:#e2e8f0;color:#64748b">ℹ</span>
+                  <span style="color:#64748b">Features admin se manage kiye ja sakte hain.</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Package Tags & Note -->
+            <div>
+              <h3>Package Details</h3>
+              <div class="tags">
+                <span *ngIf="pkg.badge">{{ pkg.badge }}</span>
+                <span>{{ pkg.duration || 'One-time' }}</span>
+                <span *ngIf="pkg.popular" style="background:#f3f0ff;color:#7c3aed;">⭐ Most Popular</span>
+              </div>
+              <div class="note">
+                <h4>Engagement Note</h4>
+                <p>
+                  Every engagement starts with a project briefing call.
+                  Our team ensures your requirements are fully captured before development begins.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SECTION -->
+      <div class="right card">
+        <p class="protocol">ENGAGEMENT PROTOCOL</p>
+        <h2>Project <span>Briefing</span></h2>
+
+        <div class="info">
+          <div>
+            <small>{{ pkg.duration ? 'Plan Price' : 'Fixed Price' }}</small>
+            <strong>{{ priceFormatted }}</strong>
+          </div>
+          <div>
+            <small>Duration</small>
+            <strong>{{ pkg.duration || 'One-time' }}</strong>
+          </div>
+          <div>
+            <small>Revisions</small>
+            <strong>Unlimited ✓</strong>
+          </div>
+        </div>
+
+        <button class="primary" (click)="openPayment()">
+          💳 Purchase Blueprint
+        </button>
+        <button class="secondary" (click)="showQuote = true">📞 Custom Quote</button>
+
+        <p class="secure">🔒 Secured 256-bit Connection</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Payment Modal -->
+<app-payment-modal *ngIf="showPayment" [price]="priceFormatted" [productName]="pkg?.name || 'Package'"
+  (closed)="showPayment = false">
+</app-payment-modal>
+
+<!-- Custom Quote Modal -->
+<app-custom-quote
+  *ngIf="showQuote"
+  [packageName]="pkg?.name || 'General Inquiry'"
+  (closed)="showQuote = false">
+</app-custom-quote>

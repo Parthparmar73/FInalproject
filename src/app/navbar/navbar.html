@@ -18,33 +18,58 @@
           <a class="nav-link">Services</a>
 
           <div class="mega-dropdown" [class.show]="activeDropdown === 'services'">
-
             <div class="dropdown-grid">
 
+              <!-- Services column (dynamic from Firestore nav-services) -->
               <div>
                 <h4>Services</h4>
-                <a routerLink="/ecommerce" (click)="closeDropdown()">E-commerce Development</a>
-                <a routerLink="/design-to-html" (click)="closeDropdown()">Design to HTML</a>
+                <ng-container *ngIf="navServices.length > 0; else fallbackServices">
+                  <a *ngFor="let item of navServices"
+                     (click)="navigateTo(item.route)"
+                     style="cursor:pointer">
+                    {{ item.icon }} {{ item.label }}
+                  </a>
+                </ng-container>
+                <ng-template #fallbackServices>
+                  <a routerLink="/ecommerce"      (click)="closeDropdown()">E-commerce Development</a>
+                  <a routerLink="/design-to-html" (click)="closeDropdown()">Design to HTML</a>
+                </ng-template>
               </div>
 
+              <!-- Business Challenges column (dynamic from Firestore nav-challenges) -->
               <div>
                 <h4>Business Challenges</h4>
-                <a routerLink="/digitaltransformation" (click)="closeDropdown()">
-                  <div class="icon-box">Digital Transformation</div>
-                </a>
-                <a routerLink="/security" (click)="closeDropdown()">
-                  <div class="icon-box">Security</div>
-                </a>
-                <a routerLink="/performance" (click)="closeDropdown()">
-                  <div class="icon-box">Performance</div>
-                </a>
+                <ng-container *ngIf="navChallenges.length > 0; else fallbackChallenges">
+                  <a *ngFor="let item of navChallenges"
+                     (click)="navigateTo(item.route)"
+                     style="cursor:pointer">
+                    <div class="icon-box">{{ item.icon }} {{ item.label }}</div>
+                  </a>
+                </ng-container>
+                <ng-template #fallbackChallenges>
+                  <a routerLink="/digitaltransformation" (click)="closeDropdown()">
+                    <div class="icon-box">Digital Transformation</div>
+                  </a>
+                  <a routerLink="/security"    (click)="closeDropdown()"><div class="icon-box">Security</div></a>
+                  <a routerLink="/performance" (click)="closeDropdown()"><div class="icon-box">Performance</div></a>
+                </ng-template>
               </div>
 
+              <!-- Industry Focus column (dynamic from Firestore nav-industries) -->
               <div>
                 <h4>Industry Focus</h4>
-                <a routerLink="/manufacturing" (click)="closeDropdown()">Manufacturing</a>
-                <a routerLink="/automotive" (click)="closeDropdown()">Automotive</a>
-                <a routerLink="/retail-ecommerce" (click)="closeDropdown()">Retail & E-commerce</a>
+                <ng-container *ngIf="navIndustries.length > 0; else fallbackIndustries">
+                  <a *ngFor="let item of navIndustries"
+                     (click)="navigateTo(item.route)"
+                     style="cursor:pointer">
+                    {{ item.icon }} {{ item.label }}
+                  </a>
+                </ng-container>
+                <ng-template #fallbackIndustries>
+                  <a routerLink="/manufacturing"    (click)="closeDropdown()">Manufacturing</a>
+                  <a routerLink="/automotive"       (click)="closeDropdown()">Automotive</a>
+                  <a routerLink="/retail-ecommerce" (click)="closeDropdown()">Retail &amp; E-commerce</a>
+                </ng-template>
               </div>
 
             </div>
@@ -82,62 +107,8 @@
         </li>
 
         <!-- PACKAGES -->
-        <li class="services-wrapper" (mouseenter)="openDropdown('packages')" (mouseleave)="closeDropdown()">
-
-          <a class="nav-link">Packages</a>
-
-          <div class="mega-dropdown" [class.show]="activeDropdown === 'packages'">
-
-            <div class="dropdown-grid packages-grid">
-
-              <!-- Ecommerce -->
-              <div class="package-card ecommerce">
-                <div class="package-header">
-                  <i class="fas fa-shopping-cart"></i>
-                  <div>
-                    <h4>E-commerce Solution</h4>
-                    <span class="badge orange">BEST SELLER</span>
-                  </div>
-                </div>
-
-                <p>
-                  Full end-to-end platform with payment gateway,
-                  admin panel & mobile-ready UI.
-                </p>
-
-                <div class="package-actions">
-                  <button (click)="selectEcommerce()">Details</button>
-                  <button class="primary" (click)="getQuote(ecommerceService)">
-                    Get Quote
-                  </button>
-                </div>
-              </div>
-
-              <!-- Design -->
-              <div class="package-card design">
-                <div class="package-header">
-                  <i class="fas fa-file-code"></i>
-                  <div>
-                    <h4>Design to HTML</h4>
-                    <span class="badge green">PIXEL PERFECT</span>
-                  </div>
-                </div>
-
-                <p>
-                  Figma / XD to responsive, semantic &
-                  blazing-fast HTML + Tailwind code.
-                </p>
-
-                <div class="package-actions">
-                  <button (click)="selectDesignToHtml()">Details</button>
-                  <button class="primary" (click)="getQuote(designToHtmlService)">
-                    Get Quote
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
+        <li>
+          <a class="nav-link" (click)="openPackagesModal()">Packages</a>
         </li>
 
         <!-- ABOUT -->
@@ -303,3 +274,77 @@
 
   </div>
 </div>
+
+<!-- PACKAGES MODAL -->
+<div class="pkg-overlay" *ngIf="showPackagesModal" (click)="closePackagesModal()">
+  <div class="pkg-modal" (click)="$event.stopPropagation()">
+
+    <div class="pkg-modal-header">
+      <div>
+        <h2>Our Packages</h2>
+        <p>Apni zarurat ke hisaab se sahi package chuniye</p>
+      </div>
+      <button class="pkg-close" (click)="closePackagesModal()">✕</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="pkg-loading" *ngIf="pkgsLoading">
+      <div class="pkg-spinner"></div>
+      <p>Packages load ho rahe hain...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="pkg-err-box" *ngIf="!pkgsLoading && pkgsError">
+      ⚠️ {{ pkgsError }}
+      <button (click)="fetchPackages()">↻ Retry</button>
+    </div>
+
+    <!-- Dynamic Package Cards -->
+    <div class="pkg-grid" *ngIf="!pkgsLoading && !pkgsError">
+
+      <!-- Popular package pe highlight ring -->
+      <div
+        class="pkg-card"
+        *ngFor="let pkg of packages"
+        [class.pkg-card-popular]="pkg.popular"
+        (click)="goTo(pkg.route, pkg)">
+
+        <!-- Popular badge -->
+        <div class="pkg-popular-ring" *ngIf="pkg.popular">⭐ Most Popular</div>
+
+        <!-- Icon -->
+        <div class="pkg-icon" [ngClass]="getIconClass(pkg)">
+          {{ pkg.icon || '📦' }}
+        </div>
+
+        <div class="pkg-info">
+          <!-- Badge -->
+          <span class="pkg-badge" [ngClass]="pkg.badgeColor || 'orange'" *ngIf="pkg.badge">
+            {{ pkg.badge }}
+          </span>
+
+          <h3>{{ pkg.name }}</h3>
+
+          <!-- Features list -->
+          <ul>
+            <li *ngFor="let f of (pkg.features || []).slice(0, 4)">✅ {{ f }}</li>
+          </ul>
+
+          <!-- Price -->
+          <div class="pkg-price">
+            ₹{{ pkg.price | number }}
+            <span class="pkg-duration" *ngIf="pkg.duration"> / {{ pkg.duration }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="pkg-empty" *ngIf="packages.length === 0">
+        <span>📦</span>
+        <p>Abhi koi package available nahi hai.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+

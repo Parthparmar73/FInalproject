@@ -1,0 +1,61 @@
+<!-- Modal Overlay -->
+<div class="cq-overlay" (click)="close()">
+  <div class="cq-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="cq-header">
+      <div>
+        <p class="cq-label">CUSTOM ENGAGEMENT</p>
+        <h2>Request a <span>Quote</span></h2>
+        <p class="cq-sub">for <strong>{{ packageName }}</strong></p>
+      </div>
+      <button class="cq-close" (click)="close()">✕</button>
+    </div>
+
+    <!-- Success State -->
+    <div class="cq-success" *ngIf="submitted">
+      <div class="cq-success-icon">✅</div>
+      <h3>Request Sent!</h3>
+      <p>Humari team aapko jald se jald contact karegi.</p>
+      <button class="cq-done-btn" (click)="close()">Done</button>
+    </div>
+
+    <!-- Form -->
+    <form class="cq-form" *ngIf="!submitted" (ngSubmit)="submit()">
+
+      <div class="cq-row">
+        <div class="cq-field">
+          <label>👤 Full Name *</label>
+          <input type="text" [(ngModel)]="form.name" name="name" placeholder="Aapka naam" />
+        </div>
+        <div class="cq-field">
+          <label>📧 Email *</label>
+          <input type="email" [(ngModel)]="form.email" name="email" placeholder="your@email.com" />
+        </div>
+      </div>
+
+      <div class="cq-field">
+        <label>📱 Phone (Optional)</label>
+        <input type="tel" [(ngModel)]="form.phone" name="phone" placeholder="+91 98765 43210" />
+      </div>
+
+      <div class="cq-field">
+        <label>📝 Message / Requirements *</label>
+        <textarea [(ngModel)]="form.message" name="message" rows="4"
+          placeholder="Aapko kya chahiye? Koi specific requirements batayein..."></textarea>
+      </div>
+
+      <!-- Error -->
+      <div class="cq-error" *ngIf="error">⚠️ {{ error }}</div>
+
+      <div class="cq-footer">
+        <button type="button" class="cq-cancel" (click)="close()" [disabled]="submitting">Cancel</button>
+        <button type="submit" class="cq-submit" [disabled]="submitting">
+          {{ submitting ? '⏳ Sending...' : '🚀 Send Request' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

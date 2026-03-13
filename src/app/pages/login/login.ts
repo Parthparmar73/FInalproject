@@ -19,13 +19,11 @@ const BACKEND_URL = 'http://localhost:5000';
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-showNew: boolean = false;
-showConfirm: boolean = false;
-  // Login
-  email: string = '';
-  password: string = '';
+  showNew: boolean = false;
+  showConfirm: boolean = false;
+  email = '';
+  password = '';
 
-  // Forgot password
   showForgotPassword = false;
   fpStep: 1 | 2 | 3 = 1;
 
@@ -38,7 +36,6 @@ showConfirm: boolean = false;
   isSending = false;
   forgotError = '';
 
-  // New password
   newPassword = '';
   confirmPassword = '';
   pwUpdateMsg = '';
@@ -56,15 +53,14 @@ showConfirm: boolean = false;
   }
 
   // ================= LOGIN =================
-
   login() {
     if (!this.email || !this.password) return;
 
-    const entered = this.email.toLowerCase().trim();
+    const enteredEmail = this.email.toLowerCase().trim();
 
     this.auth.login(this.email, this.password)
       .then(() => {
-        if (entered === this.ADMIN_EMAIL) {
+        if (enteredEmail === this.ADMIN_EMAIL) {
           this.router.navigate(['/admin-dashboard']);
         } else {
           this.router.navigate(['/dashboard']);
@@ -73,8 +69,7 @@ showConfirm: boolean = false;
       .catch((err: any) => alert(err.message));
   }
 
-  // ================= FORGOT UI =================
-
+  // ================= FORGOT PASSWORD =================
   openForgotPassword() {
     this.showForgotPassword = true;
     this.fpStep = 1;
@@ -96,13 +91,11 @@ showConfirm: boolean = false;
   }
 
   // ================= SEND OTP =================
-
   sendOtp() {
-
     this.forgotError = '';
 
-    if (!this.forgotEmail.includes('@')) {
-      this.forgotError = 'Enter valid email';
+    if (!this.forgotEmail || !this.forgotEmail.includes('@')) {
+      this.forgotError = 'Please enter a valid email address.';
       return;
     }
 
@@ -115,43 +108,42 @@ showConfirm: boolean = false;
         email: this.forgotEmail.toLowerCase().trim()
       })
     })
-
       .then(res => res.json())
-
       .then((data: any) => {
-
         this.ngZone.run(() => {
-
           if (data.registered) {
             this.dispatchOtp();
           } else {
             this.isSending = false;
-            this.forgotError = 'Email not registered';
+            this.forgotError = data.message || 'This email is not registered.';
           }
-
         });
-
       })
-
       .catch(() => {
-
         this.ngZone.run(() => {
           this.isSending = false;
-          this.forgotError = 'Server error';
+          this.forgotError = 'Cannot connect to server.';
         });
-
       });
-
   }
 
-  // ================= SEND MAIL =================
+  // ================= RESEND OTP =================
+  resendOtp() {
+    this.forgotError = '';
+    this.otpValues = ['', '', '', '', '', ''];
 
+    if (!this.forgotEmail) {
+      this.forgotError = 'Email missing.';
+      return;
+    }
+
+    this.dispatchOtp();
+  }
+
+  // ================= DISPATCH OTP =================
   private dispatchOtp() {
-
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
     this.generatedOtp = otp;
-
     this.otpExpiry = Date.now() + 10 * 60 * 1000;
 
     const params = {
@@ -161,58 +153,43 @@ showConfirm: boolean = false;
       message: `Your OTP is ${otp}`
     };
 
-    // Show OTP UI immediately
     this.isSending = false;
     this.fpStep = 2;
-
     this.cdr.detectChanges();
 
-    emailjs
-      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
-
-      .then(() => {
-        console.log('OTP Sent');
-      })
-
-      .catch(() => {
-        this.forgotError = 'OTP failed';
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+      .then(() => console.log('OTP Sent ✅'))
+      .catch(err => {
+        console.error(err);
+        this.forgotError = 'OTP Failed. Try again.';
         this.cdr.detectChanges();
       });
-
   }
 
   // ================= OTP INPUT =================
-
-  onOtpInput(i: number, e: Event) {
-
+  onOtpInput(index: number, e: Event) {
     const input = e.target as HTMLInputElement;
-
     const digit = input.value.replace(/\D/g, '').slice(-1);
 
     input.value = digit;
+    this.otpValues[index] = digit;
 
-    this.otpValues[i] = digit;
-
-    if (digit && i < 5) {
+    if (digit && index < 5) {
       setTimeout(() => {
-        const next =
-          document.getElementById(`otp-${i + 1}`) as HTMLInputElement;
-
-        if (next) next.focus();
-
+        const next = document.getElementById(`otp-${index + 1}`) as HTMLInputElement;
+        if (next) {
+          next.value = '';
+          this.otpValues[index + 1] = '';
+          next.focus();
+        }
       }, 10);
     }
   }
 
   onOtpKeydown(i: number, e: KeyboardEvent) {
-
     if (e.key === 'Backspace' && !this.otpValues[i] && i > 0) {
-
       this.otpValues[i - 1] = '';
-
-      const prev =
-        document.getElementById(`otp-${i - 1}`) as HTMLInputElement;
-
+      const prev = document.getElementById(`otp-${i - 1}`) as HTMLInputElement;
       if (prev) prev.focus();
     }
   }
@@ -222,38 +199,28 @@ showConfirm: boolean = false;
   }
 
   // ================= VERIFY OTP =================
-
   verifyOtp() {
-
     if (this.otpString.length < 6) {
-      this.forgotError = 'Enter full OTP';
+      this.forgotError = 'Enter all 6 digits.';
       return;
     }
 
     if (Date.now() > this.otpExpiry) {
-      this.forgotError = 'OTP expired';
+      this.forgotError = 'OTP Expired.';
       return;
     }
 
     if (this.otpString !== this.generatedOtp) {
-      this.forgotError = 'Wrong OTP';
+      this.forgotError = 'Incorrect OTP.';
       return;
     }
 
+    this.forgotError = '';
     this.fpStep = 3;
-    this.forgotError = '';
-  }
-
-  resendOtp() {
-    this.fpStep = 1;
-    this.otpValues = ['', '', '', '', '', ''];
-    this.forgotError = '';
   }
 
   // ================= UPDATE PASSWORD =================
-
   updatePassword() {
-
     this.forgotError = '';
     this.pwUpdateMsg = '';
 
@@ -275,31 +242,20 @@ showConfirm: boolean = false;
         newPassword: this.newPassword
       })
     })
-
       .then(res => res.json())
-
       .then((data: any) => {
-
         this.ngZone.run(() => {
-
           if (data.success) {
-            this.pwUpdateMsg = 'Password updated';
+            this.pwUpdateMsg = '✅ Password updated successfully!';
           } else {
-            this.forgotError = 'Update failed';
+            this.forgotError = data.message || 'Failed to update password.';
           }
-
         });
-
       })
-
       .catch(() => {
-
         this.ngZone.run(() => {
           this.forgotError = 'Server error';
         });
-
       });
-
   }
-
 }
