@@ -28,8 +28,15 @@ export interface NavDropItem {
   route: string;
   icon?: string;
   description?: string;
+  price?: number;
+  duration?: string;
+  features?: string[];
+  popular?: boolean;
   order?: number;
+  badge?: string;
+  badgeColor?: string;
 }
+
 
 // Badge color → CSS class mapping
 const BADGE_COLOR_MAP: Record<string, string> = {
@@ -127,11 +134,36 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  navigateTo(route: string) {
+  navigateTo(route: string, item?: NavDropItem) {
     if (!route) return;
-    // Absolute route (starts with /) or relative
-    const path = route.startsWith('/') ? route : `/${route}`;
-    this.router.navigate([path]);
+
+    // Build pkg state to pass along
+    const pkgState = item ? {
+      id:          item.id,
+      label:       item.label,
+      name:        item.label,
+      price:       item.price,
+      duration:    item.duration,
+      features:    item.features,
+      popular:     item.popular,
+      icon:        item.icon,
+      badge:       item.badge,
+      badgeColor:  item.badgeColor,
+      description: item.description,
+      route:       item.route
+    } : null;
+
+    // Normalize route slug (strip leading slash)
+    const slug = route.replace(/^\/+/, '');
+
+    if (pkgState) {
+      // Always route to generic service-view page
+      this.router.navigate(['/service', slug], { state: { pkg: pkgState } });
+    } else {
+      const path = route.startsWith('/') ? route : `/${route}`;
+      this.router.navigate([path]);
+    }
+
     this.closeDropdown();
   }
 

@@ -342,12 +342,16 @@ app.get('/admin/nav/:collection', async (req, res) => {
 app.post('/admin/nav/:collection', async (req, res) => {
   const col = req.params.collection;
   if (!ALLOWED_NAV.includes(col)) return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description, order } = req.body;
+  const { label, route, icon, description, order, price, duration, features, popular } = req.body;
   if (!label || !route) return res.status(400).json({ success: false, message: 'Label and route required.' });
   try {
     const ref = await db.collection(col).add({
       label: label.trim(), route: route.trim(),
       icon: (icon || '🔹').trim(), description: (description || '').trim(),
+      price: Number(price) || 0,
+      duration: (duration || '').trim(),
+      features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
+      popular: !!popular,
       order: Number(order) || 99, createdAt: new Date()
     });
     return res.json({ success: true, id: ref.id });
@@ -360,11 +364,15 @@ app.post('/admin/nav/:collection', async (req, res) => {
 app.put('/admin/nav/:collection/:id', async (req, res) => {
   const { collection: col, id } = req.params;
   if (!ALLOWED_NAV.includes(col)) return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description, order } = req.body;
+  const { label, route, icon, description, order, price, duration, features, popular } = req.body;
   try {
     await db.collection(col).doc(id).update({
       label: (label || '').trim(), route: (route || '').trim(),
       icon: (icon || '🔹').trim(), description: (description || '').trim(),
+      price: Number(price) || 0,
+      duration: (duration || '').trim(),
+      features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
+      popular: !!popular,
       order: Number(order) || 99, updatedAt: new Date()
     });
     return res.json({ success: true });
@@ -472,7 +480,7 @@ app.post('/admin/nav/:collection', async (req, res) => {
   const col = req.params.collection;
   if (!ALLOWED_NAV_COLLECTIONS.includes(col))
     return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description } = req.body;
+  const { label, route, icon, description, price, duration, features, popular } = req.body;
   if (!label || !route)
     return res.status(400).json({ success: false, message: 'Label and route required.' });
   try {
@@ -483,6 +491,10 @@ app.post('/admin/nav/:collection', async (req, res) => {
       route: route.trim(),
       icon: (icon || '🔹').trim(),
       description: (description || '').trim(),
+      price: Number(price) || 0,
+      duration: (duration || '').trim(),
+      features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
+      popular: !!popular,
       order: snap.size,
       createdAt: new Date()
     });
@@ -499,13 +511,17 @@ app.put('/admin/nav/:collection/:id', async (req, res) => {
   const { id } = req.params;
   if (!ALLOWED_NAV_COLLECTIONS.includes(col))
     return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description, order } = req.body;
+  const { label, route, icon, description, order, price, duration, features, popular } = req.body;
   try {
     await db.collection(col).doc(id).update({
       label: label.trim(),
       route: route.trim(),
       icon: (icon || '🔹').trim(),
       description: (description || '').trim(),
+      price: Number(price) || 0,
+      duration: (duration || '').trim(),
+      features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
+      popular: !!popular,
       ...(order !== undefined ? { order: Number(order) } : {}),
       updatedAt: new Date()
     });
@@ -527,6 +543,35 @@ app.delete('/admin/nav/:collection/:id', async (req, res) => {
     console.log(`🗑️  nav item deleted from ${col}: ${id}`);
     return res.json({ success: true });
   } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── GET /nav-service-by-route?route=ecommerce ───────────────────────────────
+// Service pages use this to load admin-managed data by their own route
+// e.g. /nav-service-by-route?route=ecommerce  OR  ?route=/ecommerce
+app.get('/nav-service-by-route', async (req, res) => {
+  let { route } = req.query;
+  if (!route) return res.status(400).json({ success: false, message: 'route query param required.' });
+  // Normalize: remove leading slash for comparison
+  const normalizedRoute = String(route).replace(/^\/+/, '');
+  try {
+    const snap = await db.collection('nav-services').get();
+    let found = null;
+    snap.forEach(doc => {
+      const docRoute = String(doc.data().route || '').replace(/^\/+/, '');
+      if (docRoute === normalizedRoute) {
+        found = { id: doc.id, ...doc.data() };
+      }
+    });
+    if (found) {
+      console.log(`✅ nav-service-by-route found: ${normalizedRoute}`);
+      return res.json({ success: true, item: found });
+    } else {
+      return res.json({ success: false, message: 'Not found in nav-services.' });
+    }
+  } catch (err) {
+    console.error('nav-service-by-route error:', err.message);
     return res.status(500).json({ success: false, message: err.message });
   }
 });

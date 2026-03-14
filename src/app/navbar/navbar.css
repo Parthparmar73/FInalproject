@@ -93,6 +93,17 @@
   border-radius: 8px;
 }
 
+/* NAV ITEM CONTENT */
+.nav-item-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item-header {
+  display: flex;
+  align-items: center;
+}
+
 /* VIEW ALL */
 .view-all {
   color: #0a7cff;
@@ -866,7 +877,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error box */
@@ -920,4 +933,4 @@
 .pkg-empty p {
   font-size: 16px;
   color: #888;
-}
+}
