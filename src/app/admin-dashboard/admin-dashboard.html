@@ -538,9 +538,13 @@
                 <div class="nav-item-card">
                     <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
                     <div class="nav-item-body">
-                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-label">
+                            {{ item.label }}
+                            @if (item.popular) { <span style="font-size:12px;color:orange;" title="Popular">⭐</span> }
+                        </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-services', item)">✏️</button>
@@ -570,9 +574,13 @@
                 <div class="nav-item-card">
                     <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
                     <div class="nav-item-body">
-                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-label">
+                            {{ item.label }}
+                            @if (item.popular) { <span style="font-size:12px;color:orange;" title="Popular">⭐</span> }
+                        </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-challenges', item)">✏️</button>
@@ -602,9 +610,13 @@
                 <div class="nav-item-card">
                     <div class="nav-item-icon">{{ item.icon || '🔹' }}</div>
                     <div class="nav-item-body">
-                        <div class="nav-item-label">{{ item.label }}</div>
+                        <div class="nav-item-label">
+                            {{ item.label }}
+                            @if (item.popular) { <span style="font-size:12px;color:orange;" title="Popular">⭐</span> }
+                        </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-industries', item)">✏️</button>
@@ -643,6 +655,25 @@
                     <div class="pkg-field">
                         <label>📋 Description (optional)</label>
                         <input type="text" [(ngModel)]="navForm.description" placeholder="Short description..." />
+                    </div>
+                    <div class="pkg-field">
+                        <label>💰 Price (₹)</label>
+                        <input type="number" [(ngModel)]="navForm.price" placeholder="e.g. 4999" min="0" />
+                    </div>
+                    <div class="pkg-field">
+                        <label>⏱️ Duration</label>
+                        <input type="text" [(ngModel)]="navForm.duration" placeholder="e.g. Per Month, One-time" />
+                    </div>
+                    <div class="pkg-field pkg-field--popular">
+                        <label class="pkg-toggle-label">
+                            <input type="checkbox" [(ngModel)]="navForm.popular" class="pkg-toggle-checkbox" />
+                            <span class="pkg-toggle-switch"></span>
+                            <span>⭐ Popular / Recommended</span>
+                        </label>
+                    </div>
+                    <div class="pkg-field pkg-field--full">
+                        <label>✅ Features (har feature alag line mein likho)</label>
+                        <textarea [(ngModel)]="navFeaturesText" rows="6" placeholder="Feature 1&#10;Feature 2"></textarea>
                     </div>
                 </div>
                 <div class="pkg-modal-footer">

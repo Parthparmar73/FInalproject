@@ -25,9 +25,17 @@
                 <h4>Services</h4>
                 <ng-container *ngIf="navServices.length > 0; else fallbackServices">
                   <a *ngFor="let item of navServices"
-                     (click)="navigateTo(item.route)"
+                     (click)="navigateTo(item.route, item)"
                      style="cursor:pointer">
-                    {{ item.icon }} {{ item.label }}
+                     <div class="icon-box nav-item-content">
+                       <div class="nav-item-header">
+                         {{ item.icon }} {{ item.label }}
+                         <span *ngIf="item.popular" style="font-size:10px;color:orange;margin-left:4px;" title="Popular">⭐</span>
+                       </div>
+                       <div *ngIf="item.price" style="font-size:11px;color:#0b5d5f;margin-top:2px;padding-left:22px;">
+                         ₹{{ item.price }} <span style="color:#7aa8aa;">{{ item.duration ? '/ ' + item.duration : '' }}</span>
+                       </div>
+                     </div>
                   </a>
                 </ng-container>
                 <ng-template #fallbackServices>
@@ -41,9 +49,17 @@
                 <h4>Business Challenges</h4>
                 <ng-container *ngIf="navChallenges.length > 0; else fallbackChallenges">
                   <a *ngFor="let item of navChallenges"
-                     (click)="navigateTo(item.route)"
+                     (click)="navigateTo(item.route, item)"
                      style="cursor:pointer">
-                    <div class="icon-box">{{ item.icon }} {{ item.label }}</div>
+                    <div class="icon-box">
+                      <div>
+                        {{ item.icon }} {{ item.label }}
+                        <span *ngIf="item.popular" style="font-size:10px;color:orange;margin-left:4px;" title="Popular">⭐</span>
+                      </div>
+                      <div *ngIf="item.price" style="font-size:11px;color:#0b5d5f;margin-top:2px;">
+                        ₹{{ item.price }} <span style="color:#7aa8aa;">{{ item.duration ? '/ ' + item.duration : '' }}</span>
+                      </div>
+                    </div>
                   </a>
                 </ng-container>
                 <ng-template #fallbackChallenges>
@@ -60,9 +76,17 @@
                 <h4>Industry Focus</h4>
                 <ng-container *ngIf="navIndustries.length > 0; else fallbackIndustries">
                   <a *ngFor="let item of navIndustries"
-                     (click)="navigateTo(item.route)"
+                     (click)="navigateTo(item.route, item)"
                      style="cursor:pointer">
-                    {{ item.icon }} {{ item.label }}
+                     <div class="icon-box nav-item-content">
+                       <div class="nav-item-header">
+                         {{ item.icon }} {{ item.label }}
+                         <span *ngIf="item.popular" style="font-size:10px;color:orange;margin-left:4px;" title="Popular">⭐</span>
+                       </div>
+                       <div *ngIf="item.price" style="font-size:11px;color:#0b5d5f;margin-top:2px;padding-left:22px;">
+                         ₹{{ item.price }} <span style="color:#7aa8aa;">{{ item.duration ? '/ ' + item.duration : '' }}</span>
+                       </div>
+                     </div>
                   </a>
                 </ng-container>
                 <ng-template #fallbackIndustries>
@@ -108,7 +132,7 @@
 
         <!-- PACKAGES -->
         <li>
-          <a class="nav-link" (click)="openPackagesModal()">Packages</a>
+          <a class="nav-link" routerLink="/">Packages</a>
         </li>
 
         <!-- ABOUT -->
@@ -272,79 +296,6 @@
 
     </form>
 
-  </div>
-</div>
-
-<!-- PACKAGES MODAL -->
-<div class="pkg-overlay" *ngIf="showPackagesModal" (click)="closePackagesModal()">
-  <div class="pkg-modal" (click)="$event.stopPropagation()">
-
-    <div class="pkg-modal-header">
-      <div>
-        <h2>Our Packages</h2>
-        <p>Apni zarurat ke hisaab se sahi package chuniye</p>
-      </div>
-      <button class="pkg-close" (click)="closePackagesModal()">✕</button>
-    </div>
-
-    <!-- Loading State -->
-    <div class="pkg-loading" *ngIf="pkgsLoading">
-      <div class="pkg-spinner"></div>
-      <p>Packages load ho rahe hain...</p>
-    </div>
-
-    <!-- Error State -->
-    <div class="pkg-err-box" *ngIf="!pkgsLoading && pkgsError">
-      ⚠️ {{ pkgsError }}
-      <button (click)="fetchPackages()">↻ Retry</button>
-    </div>
-
-    <!-- Dynamic Package Cards -->
-    <div class="pkg-grid" *ngIf="!pkgsLoading && !pkgsError">
-
-      <!-- Popular package pe highlight ring -->
-      <div
-        class="pkg-card"
-        *ngFor="let pkg of packages"
-        [class.pkg-card-popular]="pkg.popular"
-        (click)="goTo(pkg.route, pkg)">
-
-        <!-- Popular badge -->
-        <div class="pkg-popular-ring" *ngIf="pkg.popular">⭐ Most Popular</div>
-
-        <!-- Icon -->
-        <div class="pkg-icon" [ngClass]="getIconClass(pkg)">
-          {{ pkg.icon || '📦' }}
-        </div>
-
-        <div class="pkg-info">
-          <!-- Badge -->
-          <span class="pkg-badge" [ngClass]="pkg.badgeColor || 'orange'" *ngIf="pkg.badge">
-            {{ pkg.badge }}
-          </span>
-
-          <h3>{{ pkg.name }}</h3>
-
-          <!-- Features list -->
-          <ul>
-            <li *ngFor="let f of (pkg.features || []).slice(0, 4)">✅ {{ f }}</li>
-          </ul>
-
-          <!-- Price -->
-          <div class="pkg-price">
-            ₹{{ pkg.price | number }}
-            <span class="pkg-duration" *ngIf="pkg.duration"> / {{ pkg.duration }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty state -->
-      <div class="pkg-empty" *ngIf="packages.length === 0">
-        <span>📦</span>
-        <p>Abhi koi package available nahi hai.</p>
-      </div>
-
-    </div>
   </div>
 </div>
 

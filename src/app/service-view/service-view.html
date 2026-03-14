@@ -1,0 +1,127 @@
+<section id="service-view">
+  <div class="page">
+
+    <!-- Back -->
+    <a class="back" routerLink="/">
+      ⬅️ Back to Engineering Dashboard
+    </a>
+
+    <!-- Loading -->
+    <div class="sv-loading" *ngIf="loading">
+      <div class="sv-spinner"></div>
+      <p>Service load ho raha hai...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="sv-error" *ngIf="!loading && error">
+      <span>⚠️</span>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="fetchBySlug(item?.route || '')">↻ Retry</button>
+    </div>
+
+    <!-- Content -->
+    <div class="content" *ngIf="!loading && !error && item">
+
+      <!-- LEFT -->
+      <div class="left">
+
+        <div class="title-section">
+          <div class="icon" [style.background]="iconGradient">
+            {{ item.icon || '🔹' }}
+          </div>
+          <div>
+            <h1>{{ displayName }}</h1>
+            <span class="badge">ACTIVE_SERVICE</span>
+            <span class="id">ID: {{ pkgDisplayId }}</span>
+          </div>
+        </div>
+
+        <div class="card large">
+          <h2>Strategic Overview</h2>
+          <p class="muted">
+            {{ item.description || 'Premium service tailored for your business — built for scale, performance and
+            reliability.' }}
+          </p>
+
+          <div class="grid">
+
+            <!-- Features -->
+            <div>
+              <h3>Core Capabilities</h3>
+              <div class="capabilities">
+
+                <div class="cap-item" *ngFor="let f of item.features">
+                  <span class="check">✓</span>
+                  <span>{{ f }}</span>
+                </div>
+
+                <div class="cap-item" *ngIf="!item.features || item.features.length === 0">
+                  <span class="check" style="background:#e2e8f0;color:#64748b">ℹ</span>
+                  <span style="color:#64748b">Features admin se manage kiye ja sakte hain.</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div>
+              <h3>Service Details</h3>
+              <div class="tags">
+                <span *ngIf="item.badge">{{ item.badge }}</span>
+                <span>{{ item.duration || 'One-time' }}</span>
+                <span *ngIf="item.popular" style="background:#f3f0ff;color:#7c3aed;">⭐ Most Popular</span>
+              </div>
+              <div class="note">
+                <h4>Engagement Note</h4>
+                <p>
+                  Every engagement starts with a project briefing call.
+                  Our team ensures your requirements are fully captured before development begins.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right card">
+        <p class="protocol">ENGAGEMENT PROTOCOL</p>
+        <h2>Project <span>Briefing</span></h2>
+
+        <div class="info">
+          <div>
+            <small>{{ item.duration ? 'Plan Price' : 'Fixed Price' }}</small>
+            <strong>{{ priceFormatted }}</strong>
+          </div>
+          <div>
+            <small>Duration</small>
+            <strong>{{ item.duration || 'One-time' }}</strong>
+          </div>
+          <div>
+            <small>Revisions</small>
+            <strong>Unlimited ✓</strong>
+          </div>
+        </div>
+
+        <button class="primary" (click)="openPayment()">
+          💳 Purchase Blueprint
+        </button>
+        <button class="secondary" (click)="showQuote = true">📞 Custom Quote</button>
+
+        <p class="secure">🔒 Secured 256-bit Connection</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Payment Modal -->
+<app-payment-modal *ngIf="showPayment" [price]="priceFormatted" [productName]="displayName"
+  (closed)="showPayment = false">
+</app-payment-modal>
+
+<!-- Custom Quote Modal -->
+<app-custom-quote *ngIf="showQuote" [packageName]="displayName" (closed)="showQuote = false">
+</app-custom-quote>

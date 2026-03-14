@@ -42,6 +42,10 @@ interface NavItem {
   route: string;
   icon: string;
   description: string;
+  price?: number;
+  duration?: string;
+  features?: string[];
+  popular?: boolean;
   order?: number;
 }
 
@@ -122,7 +126,8 @@ export class AdminDashboard implements OnInit {
   editingNavItem: NavItem | null = null;
   activeNavCollection: NavCollection = 'nav-services';
   navSaving = false;
-  navForm: NavItem = { label: '', route: '', icon: '🔹', description: '' };
+  navForm: NavItem = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [] };
+  navFeaturesText = '';
 
   constructor(
     private fireAuth: Auth,
@@ -405,7 +410,8 @@ export class AdminDashboard implements OnInit {
   openAddNavItem(col: NavCollection) {
     this.activeNavCollection = col;
     this.editingNavItem = null;
-    this.navForm = { label: '', route: '', icon: '🔹', description: '' };
+    this.navForm = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [] };
+    this.navFeaturesText = '';
     this.showNavForm = true;
     this.cdr.detectChanges();
   }
@@ -413,7 +419,8 @@ export class AdminDashboard implements OnInit {
   openEditNavItem(col: NavCollection, item: NavItem) {
     this.activeNavCollection = col;
     this.editingNavItem = item;
-    this.navForm = { ...item };
+    this.navForm = { ...item, features: [...(item.features || [])] };
+    this.navFeaturesText = (item.features || []).join('\n');
     this.showNavForm = true;
     this.cdr.detectChanges();
   }
@@ -431,6 +438,14 @@ export class AdminDashboard implements OnInit {
     }
     this.navSaving = true;
     this.cdr.detectChanges();
+    
+    const featuresArr = this.navFeaturesText
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean);
+    
+    const payload = { ...this.navForm, features: featuresArr };
+
     const col = this.activeNavCollection;
     const isEdit = !!this.editingNavItem?.id;
     const url = isEdit
@@ -439,7 +454,7 @@ export class AdminDashboard implements OnInit {
     fetch(url, {
       method: isEdit ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.navForm)
+      body: JSON.stringify(payload)
     })
       .then(r => r.json())
       .then((data: any) => {

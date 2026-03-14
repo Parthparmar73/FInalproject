@@ -18,6 +18,7 @@ import { Form } from './form/form';
 import { Register } from './pages/register/register';
 import { AdminDashboard } from './admin-dashboard/admin-dashboard';
 import { PackageDetail } from './package-detail/package-detail';
+import { ServiceView } from './service-view/service-view';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -41,6 +42,7 @@ export const routes: Routes = [
   { path: 'form', component: Form },
   
   { path: 'package/:id', component: PackageDetail },
+  { path: 'service/:slug', component: ServiceView },
 
   { path: '**', redirectTo: 'login' }  // ALWAYS LAST
 ];
