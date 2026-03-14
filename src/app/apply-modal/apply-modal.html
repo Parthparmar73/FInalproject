@@ -1,0 +1,105 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <!-- ── SUCCESS STATE ── -->
+    <div *ngIf="submitSuccess" class="success-state">
+      <div class="success-icon">✅</div>
+      <h3>Application Submitted!</h3>
+      <p>Thank you for applying for <strong>{{ jobTitle }}</strong>. We'll be in touch soon.</p>
+      <button class="btn-close-success" (click)="close()">Close</button>
+    </div>
+
+    <!-- ── FORM STATE ── -->
+    <ng-container *ngIf="!submitSuccess">
+      <div class="modal-header">
+        <div>
+          <span class="modal-eyebrow">APPLY FOR POSITION</span>
+          <h2>{{ jobTitle }}</h2>
+        </div>
+        <button class="btn-x" (click)="close()">✕</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Full Name -->
+        <div class="field-group">
+          <label for="fullName">Full Name <span class="req">*</span></label>
+          <input id="fullName" type="text" formControlName="fullName" placeholder="John Doe" />
+          <span class="error" *ngIf="f['fullName'].touched && f['fullName'].errors?.['required']">Name is required.</span>
+          <span class="error" *ngIf="f['fullName'].touched && f['fullName'].errors?.['minlength']">Minimum 2 characters.</span>
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+          <span class="error" *ngIf="f['email'].touched && f['email'].errors?.['required']">Email is required.</span>
+          <span class="error" *ngIf="f['email'].touched && f['email'].errors?.['email']">Enter a valid email.</span>
+        </div>
+
+        <!-- Phone -->
+        <div class="field-group">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input id="phone" type="tel" formControlName="phone" placeholder="+91 98765 43210" />
+          <span class="error" *ngIf="f['phone'].touched && f['phone'].errors?.['required']">Phone is required.</span>
+          <span class="error" *ngIf="f['phone'].touched && f['phone'].errors?.['pattern']">Enter a valid phone number.</span>
+        </div>
+
+        <!-- Experience -->
+        <div class="field-group">
+          <label for="experience">Years of Experience <span class="req">*</span></label>
+          <select id="experience" formControlName="experience">
+            <option value="" disabled selected>Select experience level</option>
+            <option value="0-1">0 – 1 year (Fresher)</option>
+            <option value="1-3">1 – 3 years</option>
+            <option value="3-5">3 – 5 years</option>
+            <option value="5-10">5 – 10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+          <span class="error" *ngIf="f['experience'].touched && f['experience'].errors?.['required']">Please select your experience.</span>
+        </div>
+
+        <!-- Cover Letter -->
+        <div class="field-group">
+          <label for="coverLetter">Cover Letter <span class="optional">(optional)</span></label>
+          <textarea id="coverLetter" formControlName="coverLetter" rows="4"
+            placeholder="Briefly tell us why you're a great fit for this role..."></textarea>
+        </div>
+
+        <!-- CV Upload -->
+        <div class="field-group">
+          <label for="cvFile">Upload CV <span class="req">*</span> <span class="hint">(PDF only, max 5 MB)</span></label>
+          <div class="file-drop-zone" [class.has-file]="selectedFile">
+            <input id="cvFile" type="file" accept=".pdf,application/pdf" (change)="onFileChange($event)" />
+            <div class="file-drop-content">
+              <span class="file-icon">📄</span>
+              <span *ngIf="!selectedFile">Click to browse or drag & drop your PDF</span>
+              <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+            </div>
+          </div>
+          <span class="error" *ngIf="fileError">{{ fileError }}</span>
+        </div>
+
+        <!-- Upload Progress -->
+        <div class="progress-wrap" *ngIf="isSubmitting && uploadProgress > 0">
+          <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+          <span class="progress-label">Uploading CV... {{ uploadProgress }}%</span>
+        </div>
+
+        <!-- Server Error -->
+        <div class="server-error" *ngIf="submitError">{{ submitError }}</div>
+
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="close()">Cancel</button>
+          <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Submit Application</span>
+            <span *ngIf="isSubmitting">Submitting…</span>
+          </button>
+        </div>
+
+      </form>
+    </ng-container>
+
+  </div>
+</div>

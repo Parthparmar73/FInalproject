@@ -40,7 +40,7 @@
         </div>
 
         <div class="job-cta">
-          <button>APPLY NOW</button>
+          <button (click)="openModal('Senior Cloud Architect')">APPLY NOW</button>
         </div>
       </div>
 
@@ -51,7 +51,7 @@
         </div>
 
         <div class="job-cta">
-          <button>APPLY NOW</button>
+          <button (click)="openModal('Full-Stack Developer (React/Node)')">APPLY NOW</button>
         </div>
       </div>
 
@@ -62,10 +62,18 @@
         </div>
 
         <div class="job-cta">
-          <button>APPLY NOW</button>
+          <button (click)="openModal('Cybersecurity Analyst')">APPLY NOW</button>
         </div>
       </div>
 
     </div>
   </div>
 </section>
+
+<!-- APPLICATION MODAL -->
+@if (isModalOpen) {
+  <app-apply-modal
+    [jobTitle]="selectedJob"
+    (closeModal)="closeModal()">
+  </app-apply-modal>
+}
