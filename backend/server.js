@@ -501,7 +501,7 @@ app.post('/admin/nav/:collection', async (req, res) => {
   const col = req.params.collection;
   if (!ALLOWED_NAV_COLLECTIONS.includes(col))
     return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description, price, duration, features, popular } = req.body;
+  const { label, route, icon, description, price, duration, features, popular, badge, badgeColor } = req.body;
   if (!label || !route)
     return res.status(400).json({ success: false, message: 'Label and route required.' });
   try {
@@ -516,6 +516,8 @@ app.post('/admin/nav/:collection', async (req, res) => {
       duration: (duration || '').trim(),
       features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
       popular: !!popular,
+      badge: (badge || '').trim(),
+      badgeColor: (badgeColor || '').trim(),
       order: snap.size,
       createdAt: new Date()
     });
@@ -532,7 +534,7 @@ app.put('/admin/nav/:collection/:id', async (req, res) => {
   const { id } = req.params;
   if (!ALLOWED_NAV_COLLECTIONS.includes(col))
     return res.status(400).json({ success: false, message: 'Invalid collection.' });
-  const { label, route, icon, description, order, price, duration, features, popular } = req.body;
+  const { label, route, icon, description, order, price, duration, features, popular, badge, badgeColor } = req.body;
   try {
     await db.collection(col).doc(id).update({
       label: label.trim(),
@@ -543,6 +545,8 @@ app.put('/admin/nav/:collection/:id', async (req, res) => {
       duration: (duration || '').trim(),
       features: Array.isArray(features) ? features : (features || '').split('\n').map(f => f.trim()).filter(Boolean),
       popular: !!popular,
+      badge: (badge || '').trim(),
+      badgeColor: (badgeColor || '').trim(),
       ...(order !== undefined ? { order: Number(order) } : {}),
       updatedAt: new Date()
     });
@@ -625,6 +629,59 @@ app.delete('/admin/applications/:id', async (req, res) => {
     return res.json({ success: true, message: 'Application deleted.' });
   } catch (err) {
     console.error('Delete application error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── POST /payments ───────────────────────────────────────────────────────────
+// User payment complete hone par save karo Firestore 'payments' mein
+app.post('/payments', async (req, res) => {
+  const { userEmail, productName, price, txnId, method } = req.body;
+  if (!txnId) return res.status(400).json({ success: false, message: 'txnId required.' });
+  try {
+    const docRef = await db.collection('payments').add({
+      userEmail: userEmail || 'Guest',
+      productName: productName || 'Unknown Product',
+      price: price || '₹0',
+      txnId,
+      method: method || 'Card',
+      status: 'completed',
+      paidAt: new Date()
+    });
+    console.log(`✅ Payment saved: ${docRef.id} | ${userEmail} | ${productName} | ${price}`);
+    return res.json({ success: true, id: docRef.id });
+  } catch (err) {
+    console.error('Payment save error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── GET /admin/payments ──────────────────────────────────────────────────────
+app.get('/admin/payments', async (req, res) => {
+  try {
+    const snapshot = await db.collection('payments').orderBy('paidAt', 'desc').get();
+    const payments = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      paidAt: doc.data().paidAt?.toDate?.()?.toISOString() || ''
+    }));
+    console.log(`✅ Admin fetched ${payments.length} payments`);
+    return res.json({ success: true, payments });
+  } catch (err) {
+    console.error('Fetch payments error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── DELETE /admin/payments/:id ───────────────────────────────────────────────
+app.delete('/admin/payments/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ success: false, message: 'ID required.' });
+  try {
+    await db.collection('payments').doc(id).delete();
+    console.log(`🗑️  Payment deleted: ${id}`);
+    return res.json({ success: true });
+  } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
 });

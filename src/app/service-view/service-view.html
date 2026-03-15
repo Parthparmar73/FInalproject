@@ -119,6 +119,7 @@
 
 <!-- Payment Modal -->
 <app-payment-modal *ngIf="showPayment" [price]="priceFormatted" [productName]="displayName"
+  [userEmail]="currentUserEmail"
   (closed)="showPayment = false">
 </app-payment-modal>
 

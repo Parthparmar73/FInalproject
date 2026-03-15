@@ -67,7 +67,10 @@ export class NavbarComponent implements OnInit {
   activeDropdown: string | null = null;
 
   // Contact popup
-  showContactPopup = false;
+  showContactPopup  = false;
+  contactSubmitting = false;
+  contactSuccess    = false;
+  contactError      = '';
 
   // Packages modal
   showPackagesModal = false;
@@ -244,9 +247,45 @@ export class NavbarComponent implements OnInit {
       this.contactForm.markAllAsTouched();
       return;
     }
-    alert('Message sent successfully!');
-    this.contactForm.reset();
-    this.closeContactPopup();
+
+    this.contactSubmitting = true;
+    this.contactError = '';
+
+    const v = this.contactForm.value;
+    const payload = {
+      fname:   v.firstName,
+      lname:   v.lastName,
+      cname:   v.company,
+      email:   v.email,
+      number:  v.phone,
+      service: v.service,
+      message: v.message
+    };
+
+    fetch('http://localhost:5000/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(r => r.json())
+      .then((data: any) => {
+        this.contactSubmitting = false;
+        if (data.success) {
+          this.contactSuccess = true;
+          this.contactForm.reset();
+          // Auto-close after 3s
+          setTimeout(() => {
+            this.contactSuccess = false;
+            this.closeContactPopup();
+          }, 3000);
+        } else {
+          this.contactError = data.message || 'Failed to send message. Please try again.';
+        }
+      })
+      .catch(() => {
+        this.contactSubmitting = false;
+        this.contactError = 'Server se connect nahi ho pa raha. Please try again.';
+      });
   }
 
   // ── LOGOUT ────────────────────────────────────────────────────────────────

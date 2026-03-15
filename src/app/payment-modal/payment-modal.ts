@@ -1,8 +1,6 @@
-import { Component, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { interval, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-payment-modal',
@@ -14,6 +12,7 @@ import { take } from 'rxjs/operators';
 export class PaymentModalComponent implements OnDestroy {
     @Input() price: string = '₹4,000';
     @Input() productName: string = 'Blueprint';
+    @Input() userEmail: string = '';
     @Output() closed = new EventEmitter<void>();
 
     // 0=form, 1=validating, 2=bank, 3=authorizing, 4=done, 5=success
@@ -37,10 +36,12 @@ export class PaymentModalComponent implements OnDestroy {
         { name: 'BHIM', icon: '🇮🇳' },
     ];
 
-    private timerSub?: Subscription;
+    private timers: any[] = [];
+
+    constructor(private cdr: ChangeDetectorRef) {}
 
     ngOnDestroy() {
-        this.timerSub?.unsubscribe();
+        this.timers.forEach(t => clearTimeout(t));
     }
 
     setTab(tab: 'card' | 'upi') {
@@ -101,18 +102,53 @@ export class PaymentModalComponent implements OnDestroy {
     pay() {
         if (!this.validate()) return;
 
-        this.txnId = 'TXN' + Math.floor(Math.random() * 9000000 + 1000000).toString();
-        this.step = 1; // show processing, step 1 active
+        this.timers.forEach(t => clearTimeout(t));
+        this.timers = [];
 
-        // RxJS interval runs inside Angular zone — guaranteed change detection
-        // Emits 4 times (take 4): steps 1→2→3→4→5
-        this.timerSub = interval(1300).pipe(take(4)).subscribe(() => {
-            this.step++;
-        });
+        this.txnId = 'TXN' + Math.floor(Math.random() * 9000000 + 1000000).toString();
+        this.step = 1;
+        this.cdr.detectChanges();
+
+        // Step 2: Contacting Bank
+        this.timers.push(setTimeout(() => {
+            this.step = 2;
+            this.cdr.detectChanges();
+        }, 900));
+
+        // Step 3: Authorizing
+        this.timers.push(setTimeout(() => {
+            this.step = 3;
+            this.cdr.detectChanges();
+        }, 1800));
+
+        // Step 4: Almost done
+        this.timers.push(setTimeout(() => {
+            this.step = 4;
+            this.cdr.detectChanges();
+        }, 2500));
+
+        // Step 5: SUCCESS ✅ — save to Firestore
+        this.timers.push(setTimeout(() => {
+            this.step = 5;
+            this.cdr.detectChanges();
+            // Save payment record to backend
+            fetch('http://localhost:5000/payments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userEmail: this.userEmail || 'Guest',
+                    productName: this.productName,
+                    price: this.price,
+                    txnId: this.txnId,
+                    method: this.activeTab === 'upi' ? 'UPI' : 'Card'
+                })
+            }).catch(err => console.warn('Payment save error:', err));
+        }, 3200));
     }
 
     close() {
-        this.timerSub?.unsubscribe();
+        this.timers.forEach(t => clearTimeout(t));
+        this.timers = [];
         this.step = 0;
         this.cardNumber = '';
         this.cardName = '';
@@ -124,3 +160,4 @@ export class PaymentModalComponent implements OnDestroy {
         this.closed.emit();
     }
 }
+

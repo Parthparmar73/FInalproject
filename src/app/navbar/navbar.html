@@ -290,8 +290,28 @@
         Message must be at least 10 characters
       </small>
 
-      <button type="submit" class="submit-btn" [disabled]="contactForm.invalid">
-        Submit
+      <!-- Success Banner -->
+      <div *ngIf="contactSuccess" style="
+        background: linear-gradient(135deg,#0d9488,#14b8a6);
+        color:#fff; border-radius:12px; padding:18px 20px;
+        text-align:center; font-weight:600; font-size:15px;
+        margin-bottom:8px; animation: fadeIn 0.3s ease;">
+        ✅ Message sent! We'll get back to you soon.
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="contactError" style="
+        background:#fef2f2; color:#dc2626; border-radius:10px;
+        padding:12px 16px; font-size:13px; margin-bottom:8px;
+        border: 1px solid #fecaca;">
+        ⚠️ {{ contactError }}
+      </div>
+
+      <button type="submit" class="submit-btn"
+        [disabled]="contactForm.invalid || contactSubmitting"
+        *ngIf="!contactSuccess">
+        <span *ngIf="!contactSubmitting">Submit</span>
+        <span *ngIf="contactSubmitting">⏳ Sending...</span>
       </button>
 
     </form>

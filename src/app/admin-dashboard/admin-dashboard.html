@@ -42,11 +42,17 @@
                 <span class="nav-badge msg">{{ applications.length }}</span>
                 }
             </a>
+            <a [class.active]="activeTab === 'payments'" (click)="setTab('payments')">
+                <span class="nav-icon">💳</span>
+                <span>Payments</span>
+                @if (payments.length > 0) {
+                <span class="nav-badge msg">{{ payments.length }}</span>
+                }
+            </a>
         </nav>
 
         <div class="nav-section-label">OTHER</div>
         <nav>
-            <a><span class="nav-icon">📦</span><span>Orders</span></a>
             <a [class.active]="activeTab === 'settings'" (click)="setTab('settings')">
                 <span class="nav-icon">⚙️</span><span>Settings</span>
             </a>
@@ -76,6 +82,7 @@
                     @if (activeTab === 'messages') { Form Submissions }
                     @if (activeTab === 'quotes') { Quote Requests }
                     @if (activeTab === 'applications') { Job Applications }
+                    @if (activeTab === 'payments') { Payment Transactions }
                     @if (activeTab === 'settings') { Settings — Services }
                 </h1>
                 <p class="page-sub">
@@ -84,6 +91,7 @@
                     @if (activeTab === 'messages') { Contact form se aaye messages }
                     @if (activeTab === 'quotes') { Custom Quote form se aaye requests }
                     @if (activeTab === 'applications') { Careers page se aaye job applications }
+                    @if (activeTab === 'payments') { Completed payment transactions with user details }
                     @if (activeTab === 'settings') { Services, Challenges & Industries manage karo }
                 </p>
             </div>
@@ -95,7 +103,11 @@
 
         <!-- ═══ DASHBOARD TAB ═══ -->
         @if (activeTab === 'dashboard') {
-        <div class="cards">
+
+        <!-- ── STAT CARDS ROW ── -->
+        <div class="cards" style="grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;">
+
+            <!-- Users -->
             <div class="card card-users" (click)="setTab('users')" style="cursor:pointer">
                 <div class="card-icon">👥</div>
                 <div>
@@ -104,39 +116,81 @@
                 </div>
             </div>
 
+            <!-- Messages -->
             <div class="card card-messages" (click)="setTab('messages')" style="cursor:pointer">
                 <div class="card-icon">📩</div>
                 <div>
                     <h3>{{ messages.length }}</h3>
-                    <p>Messages</p>
+                    <p>Contact Messages</p>
                 </div>
             </div>
 
-            <div class="card" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);cursor:pointer" (click)="setTab('applications')">
+            <!-- Quotes -->
+            <div class="card" style="border-left-color:#f59e0b;cursor:pointer" (click)="setTab('quotes')">
+                <div class="card-icon">💬</div>
+                <div>
+                    <h3>{{ quotes.length }}</h3>
+                    <p>Quote Requests</p>
+                </div>
+            </div>
+
+            <!-- Applications -->
+            <div class="card" style="border-left-color:#6c5ce7;cursor:pointer" (click)="setTab('applications')">
                 <div class="card-icon">📋</div>
                 <div>
                     <h3>{{ applications.length }}</h3>
-                    <p>Applications</p>
+                    <p>Job Applications</p>
                 </div>
             </div>
+
+            <!-- Active Services -->
+            <div class="card" style="border-left-color:#0d9488;cursor:pointer" (click)="setTab('settings')">
+                <div class="card-icon">🛠️</div>
+                <div>
+                    <h3>{{ navServices.length }}</h3>
+                    <p>Active Services</p>
+                </div>
+            </div>
+
+            <!-- Challenges + Industries -->
+            <div class="card" style="border-left-color:#0ea5e9;cursor:pointer" (click)="setTab('settings')">
+                <div class="card-icon">🏖️</div>
+                <div>
+                    <h3>{{ navChallenges.length + navIndustries.length }}</h3>
+                    <p>Challenges & Industries</p>
+                </div>
+            </div>
+
+            <!-- Payments -->
+            <div class="card" style="border-left-color:#10b981;cursor:pointer" (click)="setTab('payments')">
+                <div class="card-icon">💳</div>
+                <div>
+                    <h3>{{ payments.length }}</h3>
+                    <p>Total Payments</p>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Dashboard Overview: 2-column layout -->
-        <div class="overview-grid">
+        <!-- ── OVERVIEW GRID (2 columns) ── -->
+        <div class="overview-grid" style="grid-template-columns:1fr 1fr;gap:20px;display:grid;">
 
             <!-- Recent Users -->
             <section class="overview-card">
                 <div class="section-header">
-                    <h2>Recent Users</h2>
+                    <h2>👥 Recent Users</h2>
                     <button class="refresh-btn" (click)="setTab('users')">View All →</button>
                 </div>
                 @if (isLoading) {
                 <div class="loader-wrap">
                     <div class="spinner"></div>
-                    <p>Load ho raha hai...</p>
+                    <p>Loading...</p>
                 </div>
                 }
-                @if (!isLoading && !errorMsg) {
+                @if (!isLoading && users.length === 0) {
+                <div class="no-data" style="padding:20px;text-align:center">No users yet 👤</div>
+                }
+                @if (!isLoading && users.length > 0) {
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -169,29 +223,30 @@
             <!-- Recent Messages -->
             <section class="overview-card">
                 <div class="section-header">
-                    <h2>Recent Messages</h2>
+                    <h2>📩 Recent Messages</h2>
                     <button class="refresh-btn" (click)="setTab('messages')">View All →</button>
                 </div>
                 @if (msgsLoading) {
                 <div class="loader-wrap">
                     <div class="spinner"></div>
-                    <p>Load ho raha hai...</p>
+                    <p>Loading...</p>
                 </div>
                 }
-                @if (!msgsLoading && !msgsError && messages.length === 0) {
-                <div class="no-data" style="padding:30px;text-align:center">Koi message nahi 📭</div>
+                @if (!msgsLoading && messages.length === 0) {
+                <div class="no-data" style="padding:20px;text-align:center">No messages yet 📭</div>
                 }
-                @if (!msgsLoading && !msgsError && messages.length > 0) {
+                @if (!msgsLoading && messages.length > 0) {
                 <div class="mini-msg-list">
-                    @for (msg of messages.slice(0, 4); track msg.id) {
+                    @for (msg of messages.slice(0, 3); track msg.id) {
                     <div class="mini-msg-card" (click)="setTab('messages')">
                         <div class="mini-msg-av">{{ msg.fname?.charAt(0)?.toUpperCase() || '?' }}</div>
                         <div class="mini-msg-info">
                             <div class="mini-msg-name">{{ msg.fname }} {{ msg.lname }}</div>
-                            <div class="mini-msg-meta">{{ msg.email }} &nbsp;·&nbsp; <span
-                                    class="badge service-badge sm">{{ msg.service }}</span></div>
-                            <div class="mini-msg-preview">{{ (msg.message || '').slice(0, 80) }}{{ (msg.message ||
-                                '').length > 80 ? '…' : '' }}</div>
+                            <div class="mini-msg-meta">{{ msg.email }}&nbsp;·&nbsp;
+                                <span class="badge service-badge sm">{{ msg.service }}</span>
+                            </div>
+                            <div class="mini-msg-preview">{{ (msg.message || '').slice(0, 70) }}{{ (msg.message ||
+                                '').length > 70 ? '…' : '' }}</div>
                         </div>
                         <div class="mini-msg-date">{{ formatDate(msg.createdAt) }}</div>
                     </div>
@@ -200,8 +255,121 @@
                 }
             </section>
 
+            <!-- Recent Quote Requests -->
+            <section class="overview-card">
+                <div class="section-header">
+                    <h2>💬 Recent Quotes</h2>
+                    <button class="refresh-btn" (click)="setTab('quotes')">View All →</button>
+                </div>
+                @if (quotesLoading) {
+                <div class="loader-wrap">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                }
+                @if (!quotesLoading && quotes.length === 0) {
+                <div class="no-data" style="padding:20px;text-align:center">No quote requests yet 💬</div>
+                }
+                @if (!quotesLoading && quotes.length > 0) {
+                <div class="mini-msg-list">
+                    @for (q of quotes.slice(0, 3); track q.id) {
+                    <div class="mini-msg-card" (click)="setTab('quotes')">
+                        <div class="mini-msg-av" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                            {{ q.name?.charAt(0)?.toUpperCase() || '?' }}
+                        </div>
+                        <div class="mini-msg-info">
+                            <div class="mini-msg-name">{{ q.name }}</div>
+                            <div class="mini-msg-meta">{{ q.email }}&nbsp;·&nbsp;
+                                <span class="badge service-badge sm">{{ q.packageName || 'General' }}</span>
+                            </div>
+                            <div class="mini-msg-preview">{{ (q.message || '').slice(0, 70) }}{{ (q.message ||
+                                '').length > 70 ? '…' : '' }}</div>
+                        </div>
+                        <div class="mini-msg-date">{{ formatDate(q.createdAt) }}</div>
+                    </div>
+                    }
+                </div>
+                }
+            </section>
+
+            <!-- Recent Job Applications -->
+            <section class="overview-card">
+                <div class="section-header">
+                    <h2>📋 Recent Applications</h2>
+                    <button class="refresh-btn" (click)="setTab('applications')">View All →</button>
+                </div>
+                @if (appsLoading) {
+                <div class="loader-wrap">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                }
+                @if (!appsLoading && applications.length === 0) {
+                <div class="no-data" style="padding:20px;text-align:center">No applications yet 📋</div>
+                }
+                @if (!appsLoading && applications.length > 0) {
+                <div class="mini-msg-list">
+                    @for (app of applications.slice(0, 3); track app.id) {
+                    <div class="mini-msg-card" (click)="setTab('applications')">
+                        <div class="mini-msg-av" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+                            {{ app.fullName?.charAt(0)?.toUpperCase() || '?' }}
+                        </div>
+                        <div class="mini-msg-info">
+                            <div class="mini-msg-name">{{ app.fullName }}</div>
+                            <div class="mini-msg-meta">{{ app.email }}&nbsp;·&nbsp;
+                                <span class="badge service-badge sm">{{ app.position }}</span>
+                            </div>
+                            <div class="mini-msg-preview">Exp: {{ app.experience || '—' }} yrs &nbsp;|&nbsp; {{
+                                app.phone || '—' }}</div>
+                        </div>
+                        <div class="mini-msg-date">{{ formatDate(app.appliedAt) }}</div>
+                    </div>
+                    }
+                </div>
+                }
+            </section>
+
+            <!-- Recent Payments -->
+            <section class="overview-card">
+                <div class="section-header">
+                    <h2>💳 Recent Payments</h2>
+                    <button class="refresh-btn" (click)="setTab('payments')">View All →</button>
+                </div>
+                @if (paymentsLoading) {
+                <div class="loader-wrap">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                }
+                @if (!paymentsLoading && payments.length === 0) {
+                <div class="no-data" style="padding:20px;text-align:center">No payments yet 💳</div>
+                }
+                @if (!paymentsLoading && payments.length > 0) {
+                <div class="mini-msg-list">
+                    @for (pay of payments.slice(0, 3); track pay.id) {
+                    <div class="mini-msg-card" (click)="setTab('payments')">
+                        <div class="mini-msg-av" style="background:linear-gradient(135deg,#10b981,#34d399);">
+                            {{ pay.userEmail?.charAt(0)?.toUpperCase() || '?' }}
+                        </div>
+                        <div class="mini-msg-info">
+                            <div class="mini-msg-name">{{ pay.userEmail }}</div>
+                            <div class="mini-msg-meta">
+                                <span class="badge service-badge sm">{{ pay.productName }}</span>
+                                &nbsp;·&nbsp;
+                                <span style="font-weight:800;color:#0b5d5f">{{ pay.price }}</span>
+                            </div>
+                            <div class="mini-msg-preview">{{ pay.method }} · {{ pay.txnId }}</div>
+                        </div>
+                        <div class="mini-msg-date">{{ formatDate(pay.paidAt) }}</div>
+                    </div>
+                    }
+                </div>
+                }
+            </section>
+
         </div>
         }
+
 
         <!-- ═══ USERS TAB ═══ -->
         @if (activeTab === 'users') {
@@ -240,16 +408,21 @@
                     </thead>
                     <tbody>
                         @for (user of filteredUsers; track user.uid; let i = $index) {
-                        <tr>
+                        <tr
+                            [style]="isAdmin(user.email) ? 'background:linear-gradient(90deg,#fef9e7,#fffbef);border-left:3px solid #f59e0b;' : ''">
                             <td class="num">{{ i + 1 }}</td>
                             <td>
                                 <div class="user-cell">
-                                    <div class="user-avatar">{{ (user.displayName || user.email).charAt(0).toUpperCase()
+                                    <div class="user-avatar"
+                                        [style]="isAdmin(user.email) ? 'background:linear-gradient(135deg,#f59e0b,#d97706)' : ''">
+                                        {{ (user.displayName || user.email).charAt(0).toUpperCase()
                                         }}</div>
-                                    <span>{{ user.displayName || '—' }}</span>
+                                    <span [style]="isAdmin(user.email) ? 'font-weight:700;color:#92400e' : ''">{{
+                                        user.displayName || '—' }}</span>
                                 </div>
                             </td>
-                            <td class="email-cell">{{ user.email }}</td>
+                            <td class="email-cell" [style]="isAdmin(user.email) ? 'font-weight:700;color:#92400e' : ''">
+                                {{ user.email }}</td>
                             <td>
                                 @if (isAdmin(user.email)) {
                                 <span class="badge role-admin">🔒 Admin</span>
@@ -265,7 +438,8 @@
                                 <button class="delete-btn" (click)="deleteUser(user.uid, user.email)"
                                     title="Delete user">🗑️</button>
                                 } @else {
-                                <span class="no-delete">—</span>
+                                <span title="Admin account cannot be deleted"
+                                    style="font-size:16px;color:#f59e0b;padding:4px 8px;display:inline-block">🔒</span>
                                 }
                             </td>
                         </tr>
@@ -515,7 +689,9 @@
                     <!-- CV Open Button -->
                     <div class="quote-footer" style="margin-top:12px">
                         @if (app.cvUrl) {
-                        <button class="refresh-btn add-pkg-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border:none;" (click)="openCV(app.cvUrl)">
+                        <button class="refresh-btn add-pkg-btn"
+                            style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border:none;"
+                            (click)="openCV(app.cvUrl)">
                             📂 CV / PDF Open Karo
                         </button>
                         } @else {
@@ -528,6 +704,77 @@
             </div>
             }
 
+        </section>
+        }
+
+        <!-- ═══ PAYMENTS TAB ═══ -->
+        @if (activeTab === 'payments') {
+        <section class="users-section">
+            <div class="section-header">
+                <h2>💳 Payments <span class="user-count-badge">{{ payments.length }}</span></h2>
+                <button class="refresh-btn" (click)="fetchPayments()">↻ Refresh</button>
+            </div>
+
+            @if (paymentsLoading) {
+            <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Payments load ho rahi hain...</p>
+            </div>
+            }
+            @if (!paymentsLoading && paymentsError) {
+            <div class="error-box">⚠️ {{ paymentsError }}</div>
+            }
+            @if (!paymentsLoading && !paymentsError && payments.length === 0) {
+            <div class="no-data" style="padding:50px;text-align:center">
+                <div style="font-size:48px;margin-bottom:12px">💳</div>
+                <p>Abhi koi payment nahi aayi.</p>
+            </div>
+            }
+            @if (!paymentsLoading && !paymentsError && payments.length > 0) {
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>👤 User Email</th>
+                            <th>📦 Product</th>
+                            <th>💰 Amount</th>
+                            <th>💳 Method</th>
+                            <th>🔖 Txn ID</th>
+                            <th>📅 Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (pay of payments; track pay.id; let i = $index) {
+                        <tr>
+                            <td class="num">{{ i + 1 }}</td>
+                            <td class="email-cell">{{ pay.userEmail }}</td>
+                            <td style="font-weight:600;color:#063c3d">{{ pay.productName }}</td>
+                            <td>
+                                <span style="font-weight:800;color:#0b5d5f;font-size:15px">{{ pay.price }}</span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd">
+                                    {{ pay.method }}
+                                </span>
+                            </td>
+                            <td style="font-family:monospace;font-size:12px;color:#5a8d8e">{{ pay.txnId }}</td>
+                            <td style="font-size:12px;color:#7aa8aa">{{ formatDate(pay.paidAt) }}</td>
+                            <td>
+                                <span class="badge verified">✅ Completed</span>
+                            </td>
+                            <td>
+                                <button class="delete-btn" (click)="deletePayment(pay.id)"
+                                    title="Delete payment record">🗑️</button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
         </section>
         }
 
@@ -556,10 +803,15 @@
                     <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-services')">➕ Add Item</button>
                 </div>
             </div>
-            @if (navLoading['nav-services']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
-            @if (!navLoading['nav-services'] && navError['nav-services']) { <div class="error-box">⚠️ {{ navError['nav-services'] }}</div> }
+            @if (navLoading['nav-services']) { <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Load ho raha hai...</p>
+            </div> }
+            @if (!navLoading['nav-services'] && navError['nav-services']) { <div class="error-box">⚠️ {{
+                navError['nav-services'] }}</div> }
             @if (!navLoading['nav-services'] && !navError['nav-services']) {
-            @if (navServices.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi service nahi. ➕ Add karo!</div> }
+            @if (navServices.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi service
+                nahi. ➕ Add karo!</div> }
             <div class="nav-items-grid">
                 @for (item of navServices; track item.id) {
                 <div class="nav-item-card">
@@ -571,7 +823,9 @@
                         </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
-                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">
+                            ₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{
+                                item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-services', item)">✏️</button>
@@ -589,13 +843,19 @@
                 <h2>💡 Business Challenges <span class="user-count-badge">{{ navChallenges.length }}</span></h2>
                 <div style="display:flex;gap:8px">
                     <button class="refresh-btn" (click)="fetchNavItems('nav-challenges')">↻ Refresh</button>
-                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-challenges')">➕ Add Item</button>
+                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-challenges')">➕ Add
+                        Item</button>
                 </div>
             </div>
-            @if (navLoading['nav-challenges']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
-            @if (!navLoading['nav-challenges'] && navError['nav-challenges']) { <div class="error-box">⚠️ {{ navError['nav-challenges'] }}</div> }
+            @if (navLoading['nav-challenges']) { <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Load ho raha hai...</p>
+            </div> }
+            @if (!navLoading['nav-challenges'] && navError['nav-challenges']) { <div class="error-box">⚠️ {{
+                navError['nav-challenges'] }}</div> }
             @if (!navLoading['nav-challenges'] && !navError['nav-challenges']) {
-            @if (navChallenges.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi challenge nahi. ➕ Add karo!</div> }
+            @if (navChallenges.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi challenge
+                nahi. ➕ Add karo!</div> }
             <div class="nav-items-grid">
                 @for (item of navChallenges; track item.id) {
                 <div class="nav-item-card">
@@ -607,7 +867,9 @@
                         </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
-                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">
+                            ₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{
+                                item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-challenges', item)">✏️</button>
@@ -625,13 +887,19 @@
                 <h2>🏭 Industry Focus <span class="user-count-badge">{{ navIndustries.length }}</span></h2>
                 <div style="display:flex;gap:8px">
                     <button class="refresh-btn" (click)="fetchNavItems('nav-industries')">↻ Refresh</button>
-                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-industries')">➕ Add Item</button>
+                    <button class="refresh-btn add-pkg-btn" (click)="openAddNavItem('nav-industries')">➕ Add
+                        Item</button>
                 </div>
             </div>
-            @if (navLoading['nav-industries']) { <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div> }
-            @if (!navLoading['nav-industries'] && navError['nav-industries']) { <div class="error-box">⚠️ {{ navError['nav-industries'] }}</div> }
+            @if (navLoading['nav-industries']) { <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Load ho raha hai...</p>
+            </div> }
+            @if (!navLoading['nav-industries'] && navError['nav-industries']) { <div class="error-box">⚠️ {{
+                navError['nav-industries'] }}</div> }
             @if (!navLoading['nav-industries'] && !navError['nav-industries']) {
-            @if (navIndustries.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi industry nahi. ➕ Add karo!</div> }
+            @if (navIndustries.length === 0) { <div class="no-data" style="padding:32px;text-align:center">Koi industry
+                nahi. ➕ Add karo!</div> }
             <div class="nav-items-grid">
                 @for (item of navIndustries; track item.id) {
                 <div class="nav-item-card">
@@ -643,7 +911,9 @@
                         </div>
                         <div class="nav-item-route">{{ item.route }}</div>
                         @if (item.description) { <div class="nav-item-desc">{{ item.description }}</div> }
-                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{ item.duration ? '/ ' + item.duration : '' }}</span></div> }
+                        @if (item.price) { <div style="font-weight:bold;margin-top:4px;font-size:14px;color:#007bff;">
+                            ₹{{ item.price }} <span style="font-size:12px;color:#666;font-weight:normal;">{{
+                                item.duration ? '/ ' + item.duration : '' }}</span></div> }
                     </div>
                     <div class="nav-item-actions">
                         <button class="pkg-edit-btn" (click)="openEditNavItem('nav-industries', item)">✏️</button>
@@ -717,7 +987,8 @@
                     </div>
                     <div class="pkg-field pkg-field--full">
                         <label>✅ Features (har feature alag line mein likho)</label>
-                        <textarea [(ngModel)]="navFeaturesText" rows="6" placeholder="Feature 1&#10;Feature 2"></textarea>
+                        <textarea [(ngModel)]="navFeaturesText" rows="6"
+                            placeholder="Feature 1&#10;Feature 2"></textarea>
                     </div>
                 </div>
                 <div class="pkg-modal-footer">
@@ -732,7 +1003,3 @@
 
     </div>
 </div>
-
-
-
-

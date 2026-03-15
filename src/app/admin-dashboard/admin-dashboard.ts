@@ -90,7 +90,7 @@ export class AdminDashboard implements OnInit {
 
   private readonly ADMIN_EMAIL = 'admin@pixelroot.com';
 
-  activeTab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'settings' = 'dashboard';
+  activeTab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'payments' | 'settings' = 'dashboard';
   settingsSubTab: SettingsSubTab = 'services';
 
   // Users
@@ -137,6 +137,11 @@ export class AdminDashboard implements OnInit {
   };
   pkgFeaturesText = ''; // multiline textarea for features
 
+  // Payments
+  payments: any[] = [];
+  paymentsLoading = false;
+  paymentsError = '';
+
   // Nav Items (Services / Challenges / Industries)
   navServices: NavItem[] = [];
   navChallenges: NavItem[] = [];
@@ -161,15 +166,21 @@ export class AdminDashboard implements OnInit {
   ngOnInit() {
     this.fetchUsers();
     this.fetchMessages();
+    this.fetchQuotes();
+    this.fetchApplications();
+    this.fetchNavItems('nav-services');
+    this.fetchNavItems('nav-challenges');
+    this.fetchNavItems('nav-industries');
   }
 
-  setTab(tab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'settings') {
+  setTab(tab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'payments' | 'settings') {
     this.activeTab = tab;
     this.cdr.detectChanges();
     if (tab === 'users' && this.users.length === 0) this.fetchUsers();
     if (tab === 'messages' && this.messages.length === 0) this.fetchMessages();
     if (tab === 'quotes' && this.quotes.length === 0) this.fetchQuotes();
     if (tab === 'applications') this.fetchApplications();
+    if (tab === 'payments' && this.payments.length === 0) this.fetchPayments();
     if (tab === 'settings') {
       if (this.navServices.length === 0) this.fetchNavItems('nav-services');
       if (this.navChallenges.length === 0) this.fetchNavItems('nav-challenges');
@@ -212,9 +223,40 @@ export class AdminDashboard implements OnInit {
       });
   }
 
+  fetchPayments() {
+    this.paymentsLoading = true;
+    this.paymentsError = '';
+    this.cdr.detectChanges();
+    fetch(`${BACKEND_URL}/admin/payments`)
+      .then(r => r.json())
+      .then((data: any) => {
+        if (data.success) this.payments = data.payments;
+        else this.paymentsError = data.message || 'Failed to load payments.';
+        this.paymentsLoading = false;
+        this.cdr.detectChanges();
+      })
+      .catch(() => {
+        this.paymentsError = 'Backend se connect nahi ho pa raha.';
+        this.paymentsLoading = false;
+        this.cdr.detectChanges();
+      });
+  }
+
+  deletePayment(id: string) {
+    if (!confirm('❗ Is payment record ko permanently delete karna chahte ho?')) return;
+    fetch(`${BACKEND_URL}/admin/payments/${id}`, { method: 'DELETE' })
+      .then(r => r.json())
+      .then((data: any) => {
+        if (data.success) this.payments = this.payments.filter((p: any) => p.id !== id);
+        else alert('Delete failed: ' + (data.message || ''));
+        this.cdr.detectChanges();
+      })
+      .catch(() => alert('Backend se connect nahi ho pa raha.'));
+  }
+
   deleteMessage(id: string, name: string) {
     if (!confirm(`❗ "${name}" ka message permanently delete karna chahte ho?\n\nYe action undo nahi ho sakta!`)) return;
-    fetch(`${BACKEND_URL}/admin/delete-message/${id}`, { method: 'POST' })
+    fetch(`${BACKEND_URL}/admin/delete-message/${id}`, { method: 'DELETE' })
       .then(res => res.json())
       .then((data: any) => {
         if (data.success) {

@@ -36,6 +36,7 @@ export class ServiceView implements OnInit, OnDestroy {
   error = '';
   showPayment = false;
   showQuote = false;
+  currentUserEmail = '';
 
   private routerState: ServiceItem | null = null;
   private paramSub?: Subscription;
@@ -112,6 +113,7 @@ export class ServiceView implements OnInit, OnDestroy {
 
   openPayment() {
     if (this.auth.currentUser) {
+      this.currentUserEmail = this.auth.currentUser.email || '';
       this.showPayment = true;
     } else {
       this.router.navigate(['/login']);
