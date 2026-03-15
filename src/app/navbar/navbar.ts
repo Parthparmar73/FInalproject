@@ -71,7 +71,6 @@ export class NavbarComponent implements OnInit {
 
   // Packages modal
   showPackagesModal = false;
-  packages: NavPackage[] = [];
   pkgsLoading = false;
   pkgsError = '';
 
@@ -107,8 +106,7 @@ export class NavbarComponent implements OnInit {
       this.userEmail = user?.email ?? null;
     });
 
-    // Pre-fetch everything on load
-    this.fetchPackages();
+    // Pre-fetch nav items on load (used by both Services dropdown & Packages modal)
     this.fetchNavItems();
   }
 
@@ -167,52 +165,33 @@ export class NavbarComponent implements OnInit {
     this.closeDropdown();
   }
 
-  // ── PACKAGES ──────────────────────────────────────────────────────────────
-
-  fetchPackages() {
-    this.pkgsLoading = true;
-    this.pkgsError   = '';
-    fetch(`${BACKEND_URL}/admin/packages`)
-      .then(r => r.json())
-      .then((data: any) => {
-        if (data.success) {
-          this.packages = (data.packages as NavPackage[]).sort((a: any, b: any) =>
-            (a.order ?? 99) - (b.order ?? 99)
-          );
-        } else {
-          this.pkgsError = data.message || 'Failed to load packages.';
-        }
-        this.pkgsLoading = false;
-      })
-      .catch(() => {
-        this.pkgsError = 'Server se connect nahi ho pa raha.';
-        this.pkgsLoading = false;
-      });
-  }
-
   badgeClass(color: string): string {
     return BADGE_COLOR_MAP[color] || 'orange';
   }
 
   openPackagesModal() {
     this.showPackagesModal = true;
-    this.fetchPackages();
+    // Reuse same nav data as Services dropdown — single source of truth
+    this.fetchNavItems();
   }
 
   closePackagesModal() {
     this.showPackagesModal = false;
   }
 
-  goTo(route: string | undefined, pkg?: NavPackage) {
-    this.closePackagesModal();
-    if (pkg?.id) {
-      this.router.navigate(['/package', pkg.id], { state: { pkg } });
-      return;
-    }
-    if (route) this.router.navigate([route]);
+  // All nav items combined (services + challenges + industries) for Packages modal
+  get allNavItems(): NavDropItem[] {
+    return [...this.navServices, ...this.navChallenges, ...this.navIndustries];
   }
 
-  getIconClass(pkg: NavPackage): string {
+  // Navigate from packages modal to service-view page (same as Services dropdown)
+  navigateFromModal(item: NavDropItem) {
+    this.closePackagesModal();
+    this.navigateTo(item.route, item);
+  }
+
+  // Icon class for NavDropItem
+  navIconClass(item: NavDropItem): string {
     const colorMap: Record<string, string> = {
       orange: 'ecom-icon',
       green:  'design-icon',
@@ -222,15 +201,29 @@ export class NavbarComponent implements OnInit {
       teal:   'mfg-icon',
       gold:   'auto-icon',
     };
-    return colorMap[pkg.badgeColor || ''] || 'ecom-icon';
+    return colorMap[item.badgeColor || ''] || 'ecom-icon';
+  }
+
+  getIconClass(item: NavDropItem | any): string {
+    const colorMap: Record<string, string> = {
+      orange: 'ecom-icon',
+      green:  'design-icon',
+      blue:   'digital-icon',
+      red:    'security-icon',
+      purple: 'perf-icon',
+      teal:   'mfg-icon',
+      gold:   'auto-icon',
+    };
+    return colorMap[item.badgeColor || ''] || 'ecom-icon';
   }
 
   // ── DROPDOWN ──────────────────────────────────────────────────────────────
 
   openDropdown(menu: string) {
     this.activeDropdown = menu;
-    // Refresh nav items every time dropdown opens so admin changes reflect
+    // Refresh data every time dropdown opens so admin changes reflect live
     if (menu === 'services') this.fetchNavItems();
+    if (menu === 'packages') this.fetchNavItems();
   }
   closeDropdown() { this.activeDropdown = null; }
 

@@ -35,6 +35,13 @@
                 <span class="nav-badge msg">{{ quotes.length }}</span>
                 }
             </a>
+            <a [class.active]="activeTab === 'applications'" (click)="setTab('applications')">
+                <span class="nav-icon">📋</span>
+                <span>Job Applications</span>
+                @if (applications.length > 0) {
+                <span class="nav-badge msg">{{ applications.length }}</span>
+                }
+            </a>
         </nav>
 
         <div class="nav-section-label">OTHER</div>
@@ -68,14 +75,16 @@
                     @if (activeTab === 'users') { Registered Users }
                     @if (activeTab === 'messages') { Form Submissions }
                     @if (activeTab === 'quotes') { Quote Requests }
-                    @if (activeTab === 'settings') { Settings — Packages }
+                    @if (activeTab === 'applications') { Job Applications }
+                    @if (activeTab === 'settings') { Settings — Services }
                 </h1>
                 <p class="page-sub">
                     @if (activeTab === 'dashboard') { Welcome back, Admin 👋 }
                     @if (activeTab === 'users') { Firebase Authentication users }
                     @if (activeTab === 'messages') { Contact form se aaye messages }
                     @if (activeTab === 'quotes') { Custom Quote form se aaye requests }
-                    @if (activeTab === 'settings') { Service packages manage karo }
+                    @if (activeTab === 'applications') { Careers page se aaye job applications }
+                    @if (activeTab === 'settings') { Services, Challenges & Industries manage karo }
                 </p>
             </div>
             <div class="user-badge">
@@ -100,6 +109,14 @@
                 <div>
                     <h3>{{ messages.length }}</h3>
                     <p>Messages</p>
+                </div>
+            </div>
+
+            <div class="card" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);cursor:pointer" (click)="setTab('applications')">
+                <div class="card-icon">📋</div>
+                <div>
+                    <h3>{{ applications.length }}</h3>
+                    <p>Applications</p>
                 </div>
             </div>
         </div>
@@ -416,15 +433,110 @@
         </section>
         }
 
+        <!-- ═══ APPLICATIONS TAB ═══ -->
+        @if (activeTab === 'applications') {
+        <section class="users-section">
+            <div class="section-header">
+                <h2>Job Applications <span class="user-count-badge">{{ applications.length }}</span></h2>
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search by name, email, position..." [(ngModel)]="appSearch"
+                        (input)="onAppSearch()" />
+                    <button class="refresh-btn" (click)="fetchApplications()">↻ Refresh</button>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            @if (appsLoading) {
+            <div class="loader-wrap">
+                <div class="spinner"></div>
+                <p>Applications load ho rahi hain...</p>
+            </div>
+            }
+
+            <!-- Error -->
+            @if (!appsLoading && appsError) {
+            <div class="error-box">⚠️ {{ appsError }}</div>
+            }
+
+            <!-- Empty State -->
+            @if (!appsLoading && !appsError && filteredApplications.length === 0) {
+            <div class="no-data" style="padding:40px;text-align:center">
+                <div style="font-size:48px;margin-bottom:12px">📋</div>
+                <p>Abhi koi job application nahi aayi.</p>
+            </div>
+            }
+
+            <!-- Application Cards -->
+            @if (!appsLoading && !appsError && filteredApplications.length > 0) {
+            <div class="msg-cards-grid">
+                @for (app of filteredApplications; track app.id) {
+                <div class="msg-card">
+
+                    <!-- Card Header -->
+                    <div class="msg-card-header">
+                        <div class="msg-avatar">{{ app.fullName?.charAt(0)?.toUpperCase() || '?' }}</div>
+                        <div class="msg-header-info">
+                            <div class="msg-fullname">{{ app.fullName }}</div>
+                            <div class="msg-date">📅 {{ formatDate(app.appliedAt) }}</div>
+                        </div>
+                        <span class="badge service-badge">{{ app.position }}</span>
+                        <button class="msg-delete-btn" (click)="deleteApplication(app)" title="Delete">🗑️</button>
+                    </div>
+
+                    <!-- Fields Grid -->
+                    <div class="msg-fields">
+                        <div class="msg-field">
+                            <span class="field-label">📧 Email</span>
+                            <span class="field-value">{{ app.email || '—' }}</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">📞 Phone</span>
+                            <span class="field-value">{{ app.phone || '—' }}</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">💼 Experience</span>
+                            <span class="field-value">{{ app.experience || '—' }} yrs</span>
+                        </div>
+                        <div class="msg-field">
+                            <span class="field-label">📄 CV File</span>
+                            <span class="field-value">{{ app.cvFileName || '—' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Cover Letter -->
+                    @if (app.coverLetter) {
+                    <div class="msg-body">
+                        <span class="field-label">💬 Cover Letter</span>
+                        <p class="msg-text">{{ app.coverLetter }}</p>
+                    </div>
+                    }
+
+                    <!-- CV Open Button -->
+                    <div class="quote-footer" style="margin-top:12px">
+                        @if (app.cvUrl) {
+                        <button class="refresh-btn add-pkg-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border:none;" (click)="openCV(app.cvUrl)">
+                            📂 CV / PDF Open Karo
+                        </button>
+                        } @else {
+                        <span style="color:#999;font-size:13px;">⚠️ CV upload nahi hua</span>
+                        }
+                    </div>
+
+                </div>
+                }
+            </div>
+            }
+
+        </section>
+        }
+
         <!-- ═══ SETTINGS TAB ═══ -->
         @if (activeTab === 'settings') {
         <section class="users-section">
 
             <!-- Sub-Tab Bar -->
             <div class="settings-subtabs">
-                <button [class.st-active]="settingsSubTab === 'packages'" (click)="setSettingsSubTab('packages')">
-                    📦 Packages
-                </button>
                 <button [class.st-active]="settingsSubTab === 'services'" (click)="setSettingsSubTab('services')">
                     🛠️ Services
                 </button>
@@ -436,91 +548,6 @@
                 </button>
             </div>
 
-            <!-- ══ PACKAGES SUB-TAB ══ -->
-            @if (settingsSubTab === 'packages') {
-            <div class="section-header" style="margin-top:22px">
-                <h2>Service Packages <span class="user-count-badge">{{ packages.length }}</span></h2>
-                <button class="refresh-btn add-pkg-btn" (click)="openAddPackage()">➕ Add Package</button>
-            </div>
-            @if (pkgLoading) {
-            <div class="loader-wrap"><div class="spinner"></div><p>Load ho raha hai...</p></div>
-            }
-            @if (!pkgLoading && pkgError) {
-            <div class="error-box">⚠️ {{ pkgError }}</div>
-            }
-            @if (showPkgForm) {
-            <div class="pkg-modal-overlay" (click)="cancelPkgForm()">
-                <div class="pkg-modal" (click)="$event.stopPropagation()">
-                    <div class="pkg-modal-header">
-                        <h3>{{ editingPkg ? '✏️ Package Edit Karo' : '📦 Naya Package Add Karo' }}</h3>
-                        <button class="pkg-close-btn" (click)="cancelPkgForm()">✕</button>
-                    </div>
-                    <div class="pkg-form-grid">
-                        <div class="pkg-field">
-                            <label>📝 Package Name *</label>
-                            <input type="text" [(ngModel)]="pkgForm.name" placeholder="e.g. Basic Plan" />
-                        </div>
-                        <div class="pkg-field">
-                            <label>💰 Price (₹) *</label>
-                            <input type="number" [(ngModel)]="pkgForm.price" placeholder="e.g. 4999" min="0" />
-                        </div>
-                        <div class="pkg-field">
-                            <label>⏱️ Duration</label>
-                            <input type="text" [(ngModel)]="pkgForm.duration" placeholder="e.g. Per Month, One-time" />
-                        </div>
-                        <div class="pkg-field pkg-field--popular">
-                            <label class="pkg-toggle-label">
-                                <input type="checkbox" [(ngModel)]="pkgForm.popular" class="pkg-toggle-checkbox" />
-                                <span class="pkg-toggle-switch"></span>
-                                <span>⭐ Popular / Recommended</span>
-                            </label>
-                        </div>
-                        <div class="pkg-field pkg-field--full">
-                            <label>✅ Features (har feature alag line mein likho)</label>
-                            <textarea [(ngModel)]="pkgFeaturesText" rows="6"
-                                placeholder="Free Domain&#10;5 Pages&#10;SEO Optimization&#10;1 Year Support"></textarea>
-                        </div>
-                    </div>
-                    <div class="pkg-modal-footer">
-                        <button class="pkg-cancel-btn" (click)="cancelPkgForm()" [disabled]="pkgSaving">Cancel</button>
-                        <button class="pkg-save-btn" (click)="savePkg()" [disabled]="pkgSaving">
-                            @if (pkgSaving) { ⏳ Saving... } @else { 💾 {{ editingPkg ? 'Update' : 'Add Package' }} }
-                        </button>
-                    </div>
-                </div>
-            </div>
-            }
-            @if (!pkgLoading && !pkgError) {
-            @if (packages.length === 0) {
-            <div class="no-data" style="padding:40px;text-align:center">Koi package nahi hai. ➕ Add Karo! 📦</div>
-            }
-            <div class="pkg-cards-grid">
-                @for (pkg of packages; track pkg.id) {
-                <div class="pkg-card" [class.pkg-card--popular]="pkg.popular">
-                    @if (pkg.popular) { <div class="pkg-popular-badge">⭐ Most Popular</div> }
-                    <div class="pkg-card-header">
-                        <div class="pkg-icon">📦</div>
-                        <div class="pkg-info">
-                            <div class="pkg-name">{{ pkg.name }}</div>
-                            <div class="pkg-duration">{{ pkg.duration || 'One-time' }}</div>
-                        </div>
-                        <div class="pkg-actions">
-                            <button class="pkg-edit-btn" (click)="openEditPackage(pkg)">✏️</button>
-                            <button class="pkg-del-btn" (click)="deletePackage(pkg)">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="pkg-price">₹{{ pkg.price | number }}<span class="pkg-price-sub">{{ pkg.duration ? '/' + pkg.duration : '' }}</span></div>
-                    <ul class="pkg-features">
-                        @for (f of pkg.features; track $index) { <li>✅ {{ f }}</li> }
-                        @if (!pkg.features || pkg.features.length === 0) { <li>—</li> }
-                    </ul>
-                </div>
-                }
-            </div>
-            }
-            }
-
-            <!-- ══ SERVICES SUB-TAB ══ -->
             @if (settingsSubTab === 'services') {
             <div class="section-header" style="margin-top:22px">
                 <h2>🛠️ Services <span class="user-count-badge">{{ navServices.length }}</span></h2>
@@ -655,6 +682,23 @@
                     <div class="pkg-field">
                         <label>📋 Description (optional)</label>
                         <input type="text" [(ngModel)]="navForm.description" placeholder="Short description..." />
+                    </div>
+                    <div class="pkg-field">
+                        <label>🏷️ Badge Text (optional)</label>
+                        <input type="text" [(ngModel)]="navForm.badge" placeholder="e.g. STARTER, PRO, ENTERPRISE" />
+                    </div>
+                    <div class="pkg-field">
+                        <label>🎨 Badge Color (icon color in navbar & packages)</label>
+                        <select [(ngModel)]="navForm.badgeColor">
+                            <option value="">-- Select Color --</option>
+                            <option value="orange">🟠 Orange (E-commerce)</option>
+                            <option value="green">🟢 Green (Design)</option>
+                            <option value="blue">🔵 Blue (Digital)</option>
+                            <option value="red">🔴 Red (Security)</option>
+                            <option value="purple">🟣 Purple (Performance)</option>
+                            <option value="teal">🩵 Teal (Manufacturing)</option>
+                            <option value="gold">🟡 Gold (Automotive)</option>
+                        </select>
                     </div>
                     <div class="pkg-field">
                         <label>💰 Price (₹)</label>

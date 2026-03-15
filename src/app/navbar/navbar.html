@@ -132,7 +132,7 @@
 
         <!-- PACKAGES -->
         <li>
-          <a class="nav-link" routerLink="/">Packages</a>
+          <a class="nav-link" style="cursor:pointer" (click)="openPackagesModal()">Packages</a>
         </li>
 
         <!-- ABOUT -->
@@ -295,6 +295,85 @@
       </button>
 
     </form>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PACKAGES POPUP MODAL
+═══════════════════════════════════════ -->
+<div class="pkg-overlay" *ngIf="showPackagesModal" (click)="closePackagesModal()">
+  <div class="pkg-modal" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="pkg-modal-header">
+      <div>
+        <h2>🗂️ Services & Packages</h2>
+        <p>Select any service to view full details, features & pricing</p>
+      </div>
+      <button class="pkg-close" (click)="closePackagesModal()">✕</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="pkg-loading" *ngIf="navLoading">
+      <div class="pkg-spinner"></div>
+      <p>Loading services...</p>
+    </div>
+
+    <!-- Packages Grid — same data as Services dropdown -->
+    <div class="pkg-grid" *ngIf="!navLoading">
+
+      <!-- Service Card — each uses same navigateTo() as Services dropdown -->
+      <div class="pkg-card"
+           *ngFor="let item of allNavItems"
+           [class.pkg-card-popular]="item.popular"
+           (click)="navigateFromModal(item)">
+
+        <!-- Popular Ring Badge -->
+        <div class="pkg-popular-ring" *ngIf="item.popular">⭐ Most Popular</div>
+
+        <!-- Icon -->
+        <div class="pkg-icon" [ngClass]="navIconClass(item)">
+          {{ item.icon || '🔹' }}
+        </div>
+
+        <!-- Badge -->
+        <span class="pkg-badge" [ngClass]="badgeClass(item.badgeColor || '')">
+          {{ item.badge || item.badgeColor || 'Service' }}
+        </span>
+
+        <!-- Info -->
+        <div class="pkg-info">
+          <h3>{{ item.label }}</h3>
+
+          <p *ngIf="item.description">{{ item.description }}</p>
+
+          <!-- Features list -->
+          <ul *ngIf="item.features && item.features.length > 0">
+            <li *ngFor="let f of (item.features || []).slice(0, 4)">✓ {{ f }}</li>
+          </ul>
+        </div>
+
+        <!-- Price -->
+        <div class="pkg-price" *ngIf="item.price">
+          ₹{{ item.price.toLocaleString('en-IN') }}
+          <span class="pkg-duration">{{ item.duration ? '/ ' + item.duration : '' }}</span>
+        </div>
+
+        <!-- View Details CTA -->
+        <div style="font-size:12px;font-weight:600;color:#0f766e;margin-top:8px;">
+          View Full Details →
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="pkg-empty" *ngIf="allNavItems.length === 0">
+        <span>📂</span>
+        <p>Admin se services add karein — yahan automatically dikhenge.</p>
+      </div>
+
+    </div>
 
   </div>
 </div>

@@ -47,6 +47,8 @@ interface NavItem {
   features?: string[];
   popular?: boolean;
   order?: number;
+  badge?: string;
+  badgeColor?: string;
 }
 
 interface QuoteRequest {
@@ -60,9 +62,22 @@ interface QuoteRequest {
   createdAt: string;
 }
 
+interface JobApplication {
+  id: string;
+  position: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  experience: string;
+  coverLetter: string;
+  cvFileName: string;
+  cvUrl: string;
+  appliedAt: string;
+}
+
 type NavCollection = 'nav-services' | 'nav-challenges' | 'nav-industries';
 
-type SettingsSubTab = 'packages' | 'services' | 'challenges' | 'industries';
+type SettingsSubTab = 'services' | 'challenges' | 'industries';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -75,8 +90,8 @@ export class AdminDashboard implements OnInit {
 
   private readonly ADMIN_EMAIL = 'admin@pixelroot.com';
 
-  activeTab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'settings' = 'dashboard';
-  settingsSubTab: SettingsSubTab = 'packages';
+  activeTab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'settings' = 'dashboard';
+  settingsSubTab: SettingsSubTab = 'services';
 
   // Users
   users: FirebaseUser[] = [];
@@ -97,6 +112,13 @@ export class AdminDashboard implements OnInit {
   quotes: QuoteRequest[] = [];
   quotesLoading = false;
   quotesError = '';
+
+  // Job Applications
+  applications: JobApplication[] = [];
+  appsLoading = false;
+  appsError = '';
+  appSearch = '';
+  filteredApplications: JobApplication[] = [];
 
   // Packages (Settings tab)
   packages: ServicePackage[] = [];
@@ -126,7 +148,7 @@ export class AdminDashboard implements OnInit {
   editingNavItem: NavItem | null = null;
   activeNavCollection: NavCollection = 'nav-services';
   navSaving = false;
-  navForm: NavItem = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [] };
+  navForm: NavItem = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [], badge: '', badgeColor: '' };
   navFeaturesText = '';
 
   constructor(
@@ -141,14 +163,14 @@ export class AdminDashboard implements OnInit {
     this.fetchMessages();
   }
 
-  setTab(tab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'settings') {
+  setTab(tab: 'dashboard' | 'users' | 'messages' | 'quotes' | 'applications' | 'settings') {
     this.activeTab = tab;
     this.cdr.detectChanges();
     if (tab === 'users' && this.users.length === 0) this.fetchUsers();
     if (tab === 'messages' && this.messages.length === 0) this.fetchMessages();
     if (tab === 'quotes' && this.quotes.length === 0) this.fetchQuotes();
+    if (tab === 'applications') this.fetchApplications();
     if (tab === 'settings') {
-      if (this.packages.length === 0) this.fetchPackages();
       if (this.navServices.length === 0) this.fetchNavItems('nav-services');
       if (this.navChallenges.length === 0) this.fetchNavItems('nav-challenges');
       if (this.navIndustries.length === 0) this.fetchNavItems('nav-industries');
@@ -410,7 +432,7 @@ export class AdminDashboard implements OnInit {
   openAddNavItem(col: NavCollection) {
     this.activeNavCollection = col;
     this.editingNavItem = null;
-    this.navForm = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [] };
+    this.navForm = { label: '', route: '', icon: '🔹', description: '', price: 0, duration: '', popular: false, features: [], badge: '', badgeColor: '' };
     this.navFeaturesText = '';
     this.showNavForm = true;
     this.cdr.detectChanges();
@@ -419,7 +441,7 @@ export class AdminDashboard implements OnInit {
   openEditNavItem(col: NavCollection, item: NavItem) {
     this.activeNavCollection = col;
     this.editingNavItem = item;
-    this.navForm = { ...item, features: [...(item.features || [])] };
+    this.navForm = { ...item, features: [...(item.features || [])], badge: item.badge || '', badgeColor: item.badgeColor || '' };
     this.navFeaturesText = (item.features || []).join('\n');
     this.showNavForm = true;
     this.cdr.detectChanges();
@@ -561,6 +583,67 @@ export class AdminDashboard implements OnInit {
           this.cdr.detectChanges();
         }
       });
+  }
+
+  // ── JOB APPLICATIONS ──────────────────────────────────────────────────────
+
+  fetchApplications() {
+    this.appsLoading = true;
+    this.appsError = '';
+    this.cdr.detectChanges();
+    fetch(`${BACKEND_URL}/admin/applications`)
+      .then(r => r.json())
+      .then((data: any) => {
+        if (data.success) {
+          this.applications = data.applications;
+          this.filteredApplications = data.applications;
+        } else {
+          this.appsError = data.message || 'Fetch failed.';
+        }
+        this.appsLoading = false;
+        this.cdr.detectChanges();
+      })
+      .catch(() => {
+        this.appsError = 'Server se connect nahi ho pa raha.';
+        this.appsLoading = false;
+        this.cdr.detectChanges();
+      });
+  }
+
+  deleteApplication(app: JobApplication) {
+    if (!confirm(`❗ "${app.fullName}" ki application permanently delete karein?\n\nYe action undo nahi ho sakta!`)) return;
+    fetch(`${BACKEND_URL}/admin/applications/${app.id}`, { method: 'DELETE' })
+      .then(r => r.json())
+      .then((data: any) => {
+        if (data.success) {
+          this.applications = this.applications.filter(a => a.id !== app.id);
+          this.filteredApplications = this.filteredApplications.filter(a => a.id !== app.id);
+          this.cdr.detectChanges();
+        } else {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(() => alert('Backend se connect nahi ho pa raha.'));
+  }
+
+  openCV(url: string) {
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      alert('Is application ka CV available nahi hai (storage upload fail hua tha).');
+    }
+  }
+
+  onAppSearch() {
+    const q = this.appSearch.toLowerCase().trim();
+    this.filteredApplications = !q
+      ? this.applications
+      : this.applications.filter(a =>
+          a.fullName?.toLowerCase().includes(q) ||
+          a.email?.toLowerCase().includes(q) ||
+          a.position?.toLowerCase().includes(q) ||
+          a.experience?.toLowerCase().includes(q)
+        );
   }
 }
 

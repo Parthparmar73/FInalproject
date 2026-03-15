@@ -79,6 +79,27 @@ app.post('/update-password', async (req, res) => {
 });
 
 
+// ─── GET /admin/users ────────────────────────────────────────────────────────
+// Firebase Auth se saare registered users fetch karo
+app.get('/admin/users', async (req, res) => {
+  try {
+    const listUsersResult = await admin.auth().listUsers(1000);
+    const users = listUsersResult.users.map(u => ({
+      uid: u.uid,
+      email: u.email || '',
+      displayName: u.displayName || '',
+      emailVerified: u.emailVerified,
+      createdAt: u.metadata.creationTime || '',
+      lastSignIn: u.metadata.lastSignInTime || ''
+    }));
+    console.log(`✅ Admin fetched ${users.length} users`);
+    return res.json({ success: true, users });
+  } catch (err) {
+    console.error('Fetch users error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ─── DELETE /admin/delete-user ──────────────────────────────────────────────
 app.delete('/admin/delete-user/:uid', async (req, res) => {
   const { uid } = req.params;
@@ -572,6 +593,38 @@ app.get('/nav-service-by-route', async (req, res) => {
     }
   } catch (err) {
     console.error('nav-service-by-route error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── GET /admin/applications ─────────────────────────────────────────────────
+// Admin: Sab job applications fetch karo (Firestore 'job-applications' collection)
+app.get('/admin/applications', async (req, res) => {
+  try {
+    const snapshot = await db.collection('job-applications').orderBy('appliedAt', 'desc').get();
+    const applications = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      appliedAt: doc.data().appliedAt?.toDate?.()?.toISOString() || ''
+    }));
+    console.log(`✅ Admin fetched ${applications.length} job applications`);
+    return res.json({ success: true, applications });
+  } catch (err) {
+    console.error('Fetch applications error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── DELETE /admin/applications/:id ──────────────────────────────────────────
+app.delete('/admin/applications/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ success: false, message: 'ID required.' });
+  try {
+    await db.collection('job-applications').doc(id).delete();
+    console.log(`🗑️  Job application deleted: ${id}`);
+    return res.json({ success: true, message: 'Application deleted.' });
+  } catch (err) {
+    console.error('Delete application error:', err.message);
     return res.status(500).json({ success: false, message: err.message });
   }
 });
